@@ -97,6 +97,14 @@ class TweakWidget(QWidget):
             warning.setStyleSheet("color: #d83b01; font-size: 11px;")
             layout.addWidget(warning)
         
+        if self.tweak.requires_restart:
+            restart_button = QPushButton("Restart Explorer")
+            restart_button.setToolTip(
+                "Restart File Explorer to apply this tweak immediately."
+            )
+            restart_button.clicked.connect(self._restart_explorer)
+            layout.addWidget(restart_button)
+        
         # Add separator line
         line = QFrame()
         line.setFrameShape(QFrame.Shape.HLine)
@@ -139,6 +147,37 @@ class TweakWidget(QWidget):
                 "Application Failed",
                 f"Failed to apply '{self.tweak.name}'.\n\n"
                 "Make sure you're running WinTweaks as Administrator."
+            )
+    
+    def _restart_explorer(self):
+        """Restart File Explorer so restart-required tweaks take effect immediately."""
+        confirm = QMessageBox.question(
+            self,
+            "Restart Explorer",
+            "Restart File Explorer now to apply this change?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
+        if confirm != QMessageBox.StandardButton.Yes:
+            return
+
+        try:
+            import subprocess
+
+            subprocess.run(
+                ["taskkill", "/F", "/IM", "explorer.exe"],
+                capture_output=True,
+            )
+            subprocess.Popen("explorer.exe")
+            QMessageBox.information(
+                self,
+                "WinTweaks",
+                "File Explorer has been restarted.",
+            )
+        except Exception as exc:
+            QMessageBox.warning(
+                self,
+                "WinTweaks",
+                f"Could not restart File Explorer:\n{exc}",
             )
 
 
@@ -248,7 +287,7 @@ class MainWindow(QMainWindow):
         title.setStyleSheet("padding: 10px 15px; color: #333333;")
         sidebar_layout.addWidget(title)
         
-        version = QLabel("v1.0.0")
+        version = QLabel("v1.5.0")
         version.setStyleSheet("padding: 0 15px 15px 15px; color: #888888; font-size: 11px;")
         sidebar_layout.addWidget(version)
         
