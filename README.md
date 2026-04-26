@@ -48,6 +48,10 @@ python build.py
 - Added a beta custom registry features panel for advanced tweaks
 - Updated the application version to `v1.5.0`
 
+## Important!
+-Most features will need pc restart to work
+-Dont forget to say any bugs you encounter!
+
 ## License
 
 MIT
