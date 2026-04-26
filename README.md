@@ -49,8 +49,7 @@ python build.py
 - Updated the application version to `v1.5.0`
 
 ## Important!
--Most features will need pc restart to work
--Dont forget to say any bugs you encounter!
+-Most features will need pc restart to work, Dont forget to say any bugs you encounter!
 
 ## License
 
