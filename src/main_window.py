@@ -219,10 +219,16 @@ class CategoryPage(QWidget):
             TweakCategory.TASKBAR: "Customize the appearance and behavior of your taskbar.",
             TweakCategory.EXPLORER: "Modify File Explorer settings and appearance.",
             TweakCategory.SYSTEM: "Change system-wide settings and behaviors.",
+            TweakCategory.NETWORK: "Tweak networking, IPv6, SMB and connectivity.",
+            TweakCategory.POWER: "Power, battery, sleep and hibernation settings.",
+            TweakCategory.GAMING: "Optimize Windows for gaming and competitive play.",
             TweakCategory.PRIVACY: "Control privacy settings and data collection.",
             TweakCategory.PERFORMANCE: "Optimize system performance.",
+            TweakCategory.SECURITY: "Configure UAC, SmartScreen and Defender settings.",
+            TweakCategory.APPS_SERVICES: "Disable bundled apps and unwanted services.",
             TweakCategory.CONTEXT_MENU: "Customize right-click context menus.",
             TweakCategory.PERSONALIZATION: "Customize visual appearance and effects.",
+            TweakCategory.ACCESSIBILITY: "Tune mouse, keyboard and visual accessibility.",
         }
         
         desc = QLabel(descriptions.get(self.category, ""))
@@ -287,7 +293,7 @@ class MainWindow(QMainWindow):
         title.setStyleSheet("padding: 10px 15px; color: #333333;")
         sidebar_layout.addWidget(title)
         
-        version = QLabel("v1.5.0")
+        version = QLabel("v2.0.0")
         version.setStyleSheet("padding: 0 15px 15px 15px; color: #888888; font-size: 11px;")
         sidebar_layout.addWidget(version)
         
@@ -337,7 +343,7 @@ class MainWindow(QMainWindow):
         self.category_pages = {}
         for category in TweakCategory:
             if category == TweakCategory.PERSONALIZATION:
-                # Use special personalization tab with wallpaper/fonts
+                # Use special personalization tab
                 page = PersonalizationTab()
             else:
                 page = CategoryPage(category, self.manager)

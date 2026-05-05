@@ -1,8 +1,7 @@
 """
 Personalization hub for WinTweaks.
 
-This page groups the main appearance tools into separate tabs so the feature set
-can grow without turning into a monolithic widget.
+Groups appearance tools into a single Wallpaper & Icons tab.
 """
 
 from __future__ import annotations
@@ -11,7 +10,6 @@ from typing import Optional
 
 from PyQt6.QtWidgets import QLabel, QTabWidget, QVBoxLayout, QWidget
 
-from custom_features_beta_panel import CustomFeaturesBetaPanel
 from wallpaper_icons_panel import WallpaperAndIconsPanel
 
 
@@ -32,7 +30,7 @@ class PersonalizationTab(QWidget):
         layout.addWidget(header)
 
         description = QLabel(
-            "Customize wallpapers, icons, and experimental registry-based features."
+            "Customize wallpapers, icons and fonts."
         )
         description.setWordWrap(True)
         description.setStyleSheet("color: #666666;")
@@ -40,6 +38,5 @@ class PersonalizationTab(QWidget):
 
         self.tabs = QTabWidget()
         self.tabs.addTab(WallpaperAndIconsPanel(), "Wallpaper & Icons")
-        self.tabs.addTab(CustomFeaturesBetaPanel(), "Custom Features (Beta)")
 
         layout.addWidget(self.tabs, 1)

@@ -4,12 +4,19 @@ A Windows system tweaking tool inspired by GNOME Tweaks, designed to customize a
 
 ## Features
 
-- **Taskbar Tweaks**: Customize taskbar behavior, size, and appearance
-- **Explorer Tweaks**: File Explorer customization options
-- **System Tweaks**: Windows system settings modifications
-- **Privacy Tweaks**: Privacy-related settings management
-- **Performance Tweaks**: System performance optimizations
-- **Personalization**: Wallpaper, desktop icons, custom fonts, and beta custom features
+- **Taskbar**: Position, transparency, multi-display, tray, alignment and corners
+- **Explorer**: Hidden files, desktop icons, jump lists, navigation pane and ribbon
+- **System**: Dark mode, accent colors, snap, shake, sticky keys and crash control
+- **Network**: IPv6, LLMNR, SMB1, RDP, Wi-Fi Sense, Teredo and APIPA controls
+- **Power & Battery**: Hibernation, fast startup, throttling and power-flyout entries
+- **Gaming**: Game Bar, Game Mode, HW GPU scheduling, FSO, mouse accel, VBS, GPU priority
+- **Performance**: Visual effects, menu delays, drag windows, hung-app timeouts
+- **Security & Defender**: UAC, SmartScreen, Defender real-time/cloud/samples, AutoPlay
+- **Privacy**: Telemetry, advertising ID, Cortana, recent files
+- **Apps & Services**: OneDrive, Cortana, Store, Search/SysMain/Spooler/DiagTrack
+- **Context Menu**: Classic Win10 menu, Open with Notepad, PowerShell here, Take Ownership
+- **Personalization**: Wallpaper, desktop icons, custom fonts, lock screen, fonts, borders
+- **Accessibility**: Cursors, keys, mouse trails, double-click speed, keyboard repeat
 
 ## Requirements
 
@@ -41,12 +48,18 @@ python build.py
 
 ## Update Log
 
-### v1.5.0
-- Added a modular Personalization hub with separate tabs for wallpaper, desktop icons, custom fonts, and beta custom features
-- Added wallpaper and desktop icon controls in a dedicated panel
-- Added custom font loading and application-wide font switching
-- Added a beta custom registry features panel for advanced tweaks
-- Updated the application version to `v1.5.0`
+### v2.0.0
+- Added **75 new tweaks** spanning 5 brand-new tabs and expansions of existing ones
+- New tabs: **Network**, **Power & Battery**, **Gaming**, **Security & Defender**, **Apps & Services**
+- Taskbar: multi-display, tray chevron, hover-preview delay and notification-icon hide
+- Explorer: This PC / User folder / Network / Recycle Bin / Control Panel desktop icons, jump-list privacy, full-folder navigation pane
+- Performance: drag-window outline, configurable hung-app + wait-to-kill timeouts
+- Context menu: PowerShell-here-as-admin, Cmd-here-as-admin, Take Ownership
+- Personalization: lock screen tips/Spotlight, window border widths, ClearType toggle, translucent selection
+- Accessibility: double-click speed, hover time, keyboard repeat delay/rate
+- Generalized REG_SZ spinbox conversion in `tweak_manager.py` so future string-typed numeric tweaks need no special handler
+- Bumped to `v2.0.0`
+
 
 ## Important!
 -Most features will need pc restart to work, Dont forget to say any bugs you encounter!

@@ -19,6 +19,17 @@ class TweakManager:
             "perf_menu_delay": self._handle_menu_delay,
             "context_old_menu": self._handle_context_menu,
             "context_open_with_notepad": self._handle_notepad_context,
+            "context_pwsh_admin_here": self._make_shell_add_handler(
+                root_keys=[r"Directory\Background\shell\PowerShellAdmin"]
+            ),
+            "context_cmd_admin_here": self._make_shell_add_handler(
+                root_keys=[r"Directory\Background\shell\CmdAdmin"]
+            ),
+            "context_take_ownership": self._make_shell_add_handler(
+                root_keys=[r"*\shell\TakeOwnership", r"Directory\shell\TakeOwnership"]
+            ),
+            "taskbar_transparency_level": self._handle_transparency_level,
+            "taskbar_position": self._handle_taskbar_position,
         }
     
     def get_tweak(self, tweak_id: str) -> Optional[Tweak]:
@@ -56,7 +67,14 @@ class TweakManager:
         # For checkbox tweaks
         if tweak.option.type == "checkbox":
             return current_value == change.enabled_value
-        
+
+        # Spinbox values stored as REG_SZ need int conversion for the UI
+        if tweak.option.type == "spinbox" and change.value_type == winreg.REG_SZ:
+            try:
+                return int(current_value)
+            except (ValueError, TypeError):
+                return tweak.option.default
+
         return current_value
     
     def apply_tweak(self, tweak_id: str, value: Any) -> bool:
@@ -78,7 +96,15 @@ class TweakManager:
                 reg_value = change.enabled_value if value else change.disabled_value
             else:
                 reg_value = value
-            
+
+            # Spinbox values destined for REG_SZ keys need string conversion
+            if (
+                tweak.option.type == "spinbox"
+                and change.value_type == winreg.REG_SZ
+                and not isinstance(reg_value, str)
+            ):
+                reg_value = str(reg_value)
+
             if not write_registry_value(
                 change.hive,
                 change.key_path,
@@ -87,9 +113,65 @@ class TweakManager:
                 change.value_type
             ):
                 success = False
-        
+
         return success
     
+    def _handle_transparency_level(self, tweak: Tweak, value: Any = None, read: bool = False):
+        """Handle taskbar transparency level (0-100)."""
+        change = tweak.registry_changes[0]
+        if read:
+            current = read_registry_value(
+                change.hive, change.key_path, change.value_name, default=100
+            )
+            try:
+                return int(current)
+            except (ValueError, TypeError):
+                return 100
+        else:
+            return write_registry_value(
+                change.hive, change.key_path, change.value_name,
+                int(value), change.value_type
+            )
+
+    def _handle_taskbar_position(self, tweak: Tweak, value: Any = None, read: bool = False):
+        """Handle taskbar position via StuckRects3 Settings binary."""
+        change = tweak.registry_changes[0]
+        mapping = {"bottom": 3, "top": 1, "left": 0, "right": 2}
+        reverse_map = {v: k for k, v in mapping.items()}
+        if read:
+            current_bytes = read_registry_value(
+                change.hive, change.key_path, change.value_name, default=None
+            )
+            if current_bytes and len(current_bytes) >= 13:
+                edge_val = current_bytes[12]
+                return reverse_map.get(edge_val, "bottom")
+            return "bottom"
+        else:
+            edge_val = mapping.get(value, 3)
+            current_bytes = read_registry_value(
+                change.hive, change.key_path, change.value_name, default=None
+            )
+            if current_bytes is None:
+                # Create default StuckRects3 Settings (28 bytes)
+                current_bytes = bytes([
+                    0x28, 0x00, 0x00, 0x00,  # Size (DWORD, typically 40)
+                    0x01, 0x00, 0x00, 0x00,  # Unknown/reserved
+                    0x03, 0x00, 0x00, 0x00,  # Primary monitor edge (bottom)
+                    0x00, 0x00, 0x00, 0x00,  # Monitor work rect left
+                    0x00, 0x00, 0x00, 0x00,  # top
+                    0x00, 0x00, 0x00, 0x00,  # right (will be set later)
+                    0x00, 0x00, 0x00, 0x00,  # bottom
+                    0x01, 0x00, 0x00, 0x00,  # Flags (always 1)
+                ])
+            if len(current_bytes) < 28:
+                current_bytes = current_bytes.ljust(28, b'\x00')
+            new_bytes = bytearray(current_bytes)
+            new_bytes[12] = edge_val
+            return write_registry_value(
+                change.hive, change.key_path, change.value_name,
+                bytes(new_bytes), change.value_type
+            )
+
     def _handle_search_box(self, tweak: Tweak, value: Any = None, read: bool = False):
         """Handle search box mode tweak."""
         change = tweak.registry_changes[0]
@@ -202,7 +284,6 @@ class TweakManager:
             else:
                 # Remove the context menu entries
                 try:
-                    import winreg
                     # Delete command key first (child)
                     winreg.DeleteKey(
                         winreg.HKEY_CLASSES_ROOT,
@@ -217,3 +298,41 @@ class TweakManager:
                 except Exception as e:
                     print(f"Error removing notepad context menu: {e}")
                     return False
+
+    def _make_shell_add_handler(self, root_keys):
+        """
+        Build a handler for context menu 'add this entry' tweaks.
+
+        Each root_key has a child '\\command' subkey. Enabling writes every
+        registry_change; disabling deletes both \\command and the root key
+        for each entry.
+        """
+        def handler(tweak: Tweak, value: Any = None, read: bool = False):
+            if read:
+                change = tweak.registry_changes[0]
+                exists = read_registry_value(
+                    change.hive, change.key_path, change.value_name, default=None
+                )
+                return exists is not None
+            if value:
+                success = True
+                for change in tweak.registry_changes:
+                    if not write_registry_value(
+                        change.hive, change.key_path, change.value_name,
+                        change.enabled_value, change.value_type
+                    ):
+                        success = False
+                return success
+            # Disable: tear down each shell key and its \command subkey
+            success = True
+            for root in root_keys:
+                for subpath in (root + r"\command", root):
+                    try:
+                        winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT, subpath)
+                    except FileNotFoundError:
+                        pass
+                    except OSError as e:
+                        print(f"Error removing {subpath}: {e}")
+                        success = False
+            return success
+        return handler

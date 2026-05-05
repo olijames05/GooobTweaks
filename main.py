@@ -20,7 +20,7 @@ def main():
     
     app = QApplication(sys.argv)
     app.setApplicationName("WinTweaks")
-    app.setApplicationVersion("1.5.0")
+    app.setApplicationVersion("2.0.0")
     
     # Set application font
     font = QFont("Segoe UI", 9)
