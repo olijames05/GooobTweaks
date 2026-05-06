@@ -48,7 +48,7 @@ python build.py
 
 ## Update Log
 
-### v2.0.0
+# v2.0.0
 - Added **75 new tweaks** spanning 5 brand-new tabs and expansions of existing ones
 - New tabs: **Network**, **Power & Battery**, **Gaming**, **Security & Defender**, **Apps & Services**
 - Taskbar: multi-display, tray chevron, hover-preview delay and notification-icon hide
@@ -73,7 +73,7 @@ python build.py
 - Skip Recycle Bin Delete Confirmation
 - Color-code Encrypted/Compressed Files
 
-# System (+5)
+### System (+5)
 - Enable Long File Paths (>260 chars)
 - Show Verbose Boot/Shutdown Status
 - Show Verbose Boot/Shutdown Status
@@ -81,27 +81,27 @@ python build.py
 - PrtScn Opens Snipping Tool
 - Show Seconds in Taskbar Clock
 
-# Privacy (+5)
+### Privacy (+5)
 - Disable App Suggestions in Start Menu
 - Disable Windows Tips & Tricks Notifications
 - Disable Post-Update Welcome Screen
 - Disable Automatic Map Downloads
 - Disable Lock Screen Ads & Spotlight
 
- # Performance (+5)
+### Performance (+5)
 - Foreground App Switch Speed (spinbox)
 - Service Shutdown Timeout (spinbox)
 - Clear Pagefile on Shutdown
 - Raise CPU Priority for Games (spinbox)
 - Foreground Process Priority Boost (dropdown)
 
-# Gaming (+5)
+### Gaming (+5)
 - Disable Multi-Plane Overlay (MPO) — fixes GPU stutters
 - Force Fullscreen Optimizations Off — exclusive fullscreen
 - Enable DirectX Shader Cache
 - Disable Pointer Precision / Raw Input — FPS mouse fix
 - Use High Performance Power Plan
-## Important!
+### Important!
 -Most features will need pc restart to work, Dont forget to say any bugs you encounter!
 
 ## License
