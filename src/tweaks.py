@@ -884,6 +884,121 @@ EXPLORER_TWEAKS = [
         ],
         requires_restart=True
     ),
+    Tweak(
+        id="explorer_no_sync_ads",
+        name="Hide OneDrive Sync Ads in Explorer",
+        category=TweakCategory.EXPLORER,
+        description="Remove the 'Get more storage' and OneDrive promotion banners in File Explorer",
+        option=TweakOption(
+            name="enabled",
+            label="Hide sync provider notifications",
+            type="checkbox",
+            default=False,
+            description="Removes OneDrive advertising banners from Explorer"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="ShowSyncProviderNotifications",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="explorer_expand_nav_to_folder",
+        name="Auto-Expand Navigation Pane to Current Folder",
+        category=TweakCategory.EXPLORER,
+        description="Automatically expand the left navigation pane to show the currently open folder",
+        option=TweakOption(
+            name="enabled",
+            label="Expand nav pane to current folder",
+            type="checkbox",
+            default=False,
+            description="Navigation pane always highlights and expands to where you are"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="NavPaneExpandToCurrentFolder",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="explorer_full_path_address_bar",
+        name="Show Full Path in Address Bar",
+        category=TweakCategory.EXPLORER,
+        description="Display the complete folder path in Explorer's address bar instead of breadcrumbs",
+        option=TweakOption(
+            name="enabled",
+            label="Show full path in address bar",
+            type="checkbox",
+            default=False,
+            description="Address bar shows e.g. C:\\Users\\You\\Documents instead of > Documents"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="FullPathAddress",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="explorer_no_recycle_confirm",
+        name="Skip Recycle Bin Delete Confirmation",
+        category=TweakCategory.EXPLORER,
+        description="Delete files directly to Recycle Bin without the 'Are you sure?' prompt",
+        option=TweakOption(
+            name="enabled",
+            label="Skip delete confirmation dialog",
+            type="checkbox",
+            default=False,
+            description="Files go straight to Recycle Bin — no confirm box"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer",
+                value_name="ConfirmFileDelete",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="explorer_show_encrypted_color",
+        name="Show Encrypted/Compressed Files in Color",
+        category=TweakCategory.EXPLORER,
+        description="Display encrypted files in green and compressed files in blue in Explorer",
+        option=TweakOption(
+            name="enabled",
+            label="Color-code encrypted/compressed files",
+            type="checkbox",
+            default=False,
+            description="Easy visual identification of NTFS-encrypted and compressed files"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="ShowEncryptCompressedColor",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
 ]
 
 # =============================================================================
@@ -1176,6 +1291,123 @@ SYSTEM_TWEAKS = [
             )
         ]
     ),
+    Tweak(
+        id="system_long_paths",
+        name="Enable Long File Paths (>260 chars)",
+        category=TweakCategory.SYSTEM,
+        description="Allow file paths longer than the legacy 260-character MAX_PATH limit",
+        option=TweakOption(
+            name="enabled",
+            label="Enable long paths",
+            type="checkbox",
+            default=False,
+            description="Required by some dev tools and deep folder structures"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\FileSystem",
+                value_name="LongPathsEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="system_verbose_status",
+        name="Show Verbose Boot/Shutdown Status",
+        category=TweakCategory.SYSTEM,
+        description="Display detailed status messages during Windows startup and shutdown",
+        option=TweakOption(
+            name="enabled",
+            label="Show detailed status messages",
+            type="checkbox",
+            default=False,
+            description="See exactly what Windows is loading or stopping at each step"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System",
+                value_name="VerboseStatus",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="system_remote_uac",
+        name="Disable UAC for Remote Admin Connections",
+        category=TweakCategory.SYSTEM,
+        description="Allow local admin accounts to connect remotely without UAC token filtering",
+        option=TweakOption(
+            name="enabled",
+            label="Disable remote UAC filtering",
+            type="checkbox",
+            default=False,
+            description="Useful for remote management; built-in Administrator is unaffected"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System",
+                value_name="LocalAccountTokenFilterPolicy",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="system_print_screen_snip",
+        name="PrtScn Opens Snipping Tool",
+        category=TweakCategory.SYSTEM,
+        description="Make the Print Screen key open Snipping Tool instead of copying to clipboard",
+        option=TweakOption(
+            name="enabled",
+            label="PrtScn → Snipping Tool",
+            type="checkbox",
+            default=False,
+            description="Pressing PrtScn launches the modern Snipping Tool overlay"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Keyboard",
+                value_name="PrintScreenKeyForSnippingEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="system_show_seconds_clock",
+        name="Show Seconds in Taskbar Clock",
+        category=TweakCategory.SYSTEM,
+        description="Display seconds alongside hours and minutes in the taskbar system clock",
+        option=TweakOption(
+            name="enabled",
+            label="Show seconds in clock",
+            type="checkbox",
+            default=False,
+            description="Taskbar clock shows HH:MM:SS instead of HH:MM"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="ShowSecondsInSystemClock",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ],
+        requires_restart=True
+    ),
 ]
 
 # =============================================================================
@@ -1383,6 +1615,121 @@ PRIVACY_TWEAKS = [
             )
         ]
     ),
+    Tweak(
+        id="priv_app_suggestions_start",
+        name="Disable App Suggestions in Start Menu",
+        category=TweakCategory.PRIVACY,
+        description="Remove Microsoft's suggested/promoted apps from the Start menu",
+        option=TweakOption(
+            name="enabled",
+            label="Disable app suggestions",
+            type="checkbox",
+            default=False,
+            description="Stops sponsored app ads appearing in Start"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager",
+                value_name="SubscribedContent-338388Enabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="priv_windows_tips",
+        name="Disable Windows Tips & Tricks Notifications",
+        category=TweakCategory.PRIVACY,
+        description="Stop Windows from showing tips and suggestions as notifications",
+        option=TweakOption(
+            name="enabled",
+            label="Disable tips notifications",
+            type="checkbox",
+            default=False,
+            description="Suppresses 'Did you know...' and feature discovery balloons"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager",
+                value_name="SubscribedContent-338389Enabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="priv_welcome_experience",
+        name="Disable Welcome Experience After Updates",
+        category=TweakCategory.PRIVACY,
+        description="Prevent Windows from showing 'What's new' screens after feature updates",
+        option=TweakOption(
+            name="enabled",
+            label="Disable post-update welcome screen",
+            type="checkbox",
+            default=False,
+            description="Skips the Microsoft account promotion splash after Windows updates"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager",
+                value_name="SubscribedContent-310093Enabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="priv_map_updates",
+        name="Disable Automatic Map Downloads",
+        category=TweakCategory.PRIVACY,
+        description="Stop Windows Maps from automatically downloading map data in the background",
+        option=TweakOption(
+            name="enabled",
+            label="Disable automatic map updates",
+            type="checkbox",
+            default=False,
+            description="Saves bandwidth and background CPU used by the Maps service"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\Maps",
+                value_name="AutoUpdateEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="priv_lock_screen_ads",
+        name="Disable Lock Screen Ads & Spotlight Tips",
+        category=TweakCategory.PRIVACY,
+        description="Remove Microsoft-curated images and promotional tips from the lock screen",
+        option=TweakOption(
+            name="enabled",
+            label="Disable lock screen ads",
+            type="checkbox",
+            default=False,
+            description="Stops Spotlight images and ad overlays on the lock screen"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager",
+                value_name="RotatingLockScreenOverlayEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
 ]
 
 # =============================================================================
@@ -1554,6 +1901,305 @@ PERFORMANCE_TWEAKS = [
                 value_name="StartupDelayInMSec",
                 value_type=winreg.REG_DWORD,
                 enabled_value=0,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="perf_min_animate",
+        name="Disable Minimize/Maximize Animations",
+        category=TweakCategory.PERFORMANCE,
+        description="Skip the shrink/grow animation when minimizing or maximizing windows",
+        option=TweakOption(
+            name="enabled",
+            label="Disable min/max animations",
+            type="checkbox",
+            default=False,
+            description="Windows snap open and shut instantly instead of animating"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop\WindowMetrics",
+                value_name="MinAnimate",
+                value_type=winreg.REG_SZ,
+                enabled_value="0",
+                disabled_value="1"
+            )
+        ],
+        requires_logoff=True
+    ),
+    Tweak(
+        id="perf_auto_end_tasks",
+        name="Auto-End Unresponsive Apps on Shutdown",
+        category=TweakCategory.PERFORMANCE,
+        description="Automatically kill hung apps during shutdown instead of waiting for you to confirm",
+        option=TweakOption(
+            name="enabled",
+            label="Auto-end unresponsive apps",
+            type="checkbox",
+            default=False,
+            description="Speeds up shutdown when apps refuse to close"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop",
+                value_name="AutoEndTasks",
+                value_type=winreg.REG_SZ,
+                enabled_value="1",
+                disabled_value="0"
+            )
+        ]
+    ),
+    Tweak(
+        id="perf_low_disk_check",
+        name="Disable Low Disk Space Warnings",
+        category=TweakCategory.PERFORMANCE,
+        description="Stop Windows from scanning drives and showing low disk space balloon tips",
+        option=TweakOption(
+            name="enabled",
+            label="Disable low disk space checks",
+            type="checkbox",
+            default=False,
+            description="Removes periodic disk-scan overhead and the warning balloons"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer",
+                value_name="NoLowDiskSpaceChecks",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="perf_paging_exec",
+        name="Keep Kernel in RAM",
+        category=TweakCategory.PERFORMANCE,
+        description="Prevent Windows from paging kernel and driver code to disk",
+        option=TweakOption(
+            name="enabled",
+            label="Disable kernel paging (keep in RAM)",
+            type="checkbox",
+            default=False,
+            description="Reduces latency on systems with enough RAM (4 GB+)"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management",
+                value_name="DisablePagingExecutive",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="perf_ntfs_timestamp",
+        name="Disable NTFS Last Access Timestamps",
+        category=TweakCategory.PERFORMANCE,
+        description="Stop NTFS from updating the last-accessed time on every file read",
+        option=TweakOption(
+            name="enabled",
+            label="Disable last access timestamps",
+            type="checkbox",
+            default=False,
+            description="Cuts disk write overhead on busy drives"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\FileSystem",
+                value_name="NtfsDisableLastAccessUpdate",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="perf_8dot3_names",
+        name="Disable 8.3 Filename Creation",
+        category=TweakCategory.PERFORMANCE,
+        description="Stop NTFS from generating legacy short filenames (e.g. PROGRA~1)",
+        option=TweakOption(
+            name="enabled",
+            label="Disable 8.3 short name creation",
+            type="checkbox",
+            default=False,
+            description="Speeds up file operations on drives with many files"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\FileSystem",
+                value_name="NtfsDisable8dot3NameCreation",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="perf_prefetcher",
+        name="Prefetcher Mode",
+        category=TweakCategory.PERFORMANCE,
+        description="Control what Windows Prefetcher pre-loads into RAM on boot",
+        option=TweakOption(
+            name="mode",
+            label="Prefetch mode",
+            type="dropdown",
+            default=3,
+            description="Controls what gets preloaded: apps, boot files, or both",
+            choices=[
+                (0, "Disabled"),
+                (1, "App launch only"),
+                (2, "Boot files only"),
+                (3, "Apps + Boot (default)"),
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters",
+                value_name="EnablePrefetcher",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="perf_foreground_timeout",
+        name="Foreground App Switch Speed",
+        category=TweakCategory.PERFORMANCE,
+        description="How quickly Windows gives CPU priority to the app you just clicked",
+        option=TweakOption(
+            name="timeout",
+            label="Foreground lock timeout (µs)",
+            type="spinbox",
+            default=200000,
+            description="0 = instant switch, 200000 = Windows default. Lower = snappier switching",
+            min_value=0,
+            max_value=200000
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop",
+                value_name="ForegroundLockTimeout",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="perf_service_kill_timeout",
+        name="Service Shutdown Timeout",
+        category=TweakCategory.PERFORMANCE,
+        description="How long Windows waits for services to stop during shutdown before killing them",
+        option=TweakOption(
+            name="timeout",
+            label="Service kill timeout (ms)",
+            type="spinbox",
+            default=20000,
+            description="Lower value = faster shutdowns when services hang (default 20000)",
+            min_value=2000,
+            max_value=20000
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control",
+                value_name="WaitToKillServiceTimeout",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="perf_clear_pagefile",
+        name="Clear Pagefile on Shutdown",
+        category=TweakCategory.PERFORMANCE,
+        description="Wipe the pagefile when Windows shuts down for better security (slower shutdown)",
+        option=TweakOption(
+            name="enabled",
+            label="Clear pagefile at shutdown",
+            type="checkbox",
+            default=False,
+            description="Prevents data remnants in the pagefile — security benefit at cost of slower shutdown"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management",
+                value_name="ClearPageFileAtShutdown",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="perf_games_cpu_priority",
+        name="Raise CPU Priority for Games",
+        category=TweakCategory.PERFORMANCE,
+        description="Set the CPU scheduling priority for the Games multimedia task profile to maximum",
+        option=TweakOption(
+            name="priority",
+            label="Games CPU priority (1–6)",
+            type="spinbox",
+            default=2,
+            description="6 = highest priority, 2 = Windows default. Raises CPU time for game processes",
+            min_value=1,
+            max_value=6
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games",
+                value_name="Priority",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="perf_win32_priority",
+        name="Foreground Process Priority Boost",
+        category=TweakCategory.PERFORMANCE,
+        description="Control how much extra CPU priority the active foreground window receives",
+        option=TweakOption(
+            name="mode",
+            label="Priority separation",
+            type="dropdown",
+            default=2,
+            description="Controls foreground vs background CPU time slice length",
+            choices=[
+                (0, "No boost (equal priority)"),
+                (2, "Short variable boost (default)"),
+                (24, "Long fixed — best for apps"),
+                (38, "Short fixed — best for gaming"),
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\PriorityControl",
+                value_name="Win32PrioritySeparation",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
                 disabled_value=None
             )
         ]
@@ -3318,6 +3964,139 @@ GAMING_TWEAKS = [
                 value_type=winreg.REG_DWORD,
                 enabled_value=6,
                 disabled_value=2
+            )
+        ]
+    ),
+    Tweak(
+        id="game_disable_mpo",
+        name="Disable Multi-Plane Overlay (MPO)",
+        category=TweakCategory.GAMING,
+        description="Disable MPO to fix stutters and black screens on some NVIDIA/AMD GPUs",
+        option=TweakOption(
+            name="enabled",
+            label="Disable Multi-Plane Overlay",
+            type="checkbox",
+            default=False,
+            description="Known to fix micro-stutters on Ryzen + NVIDIA setups"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\Dwm",
+                value_name="OverlayTestMode",
+                value_type=winreg.REG_DWORD,
+                enabled_value=5,
+                disabled_value=None
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="game_disable_fse_behaviour",
+        name="Force Fullscreen Optimizations Off",
+        category=TweakCategory.GAMING,
+        description="Globally disable fullscreen optimizations so games run in true exclusive fullscreen",
+        option=TweakOption(
+            name="enabled",
+            label="Disable fullscreen optimizations globally",
+            type="checkbox",
+            default=False,
+            description="Can reduce input lag and tearing in games that use exclusive fullscreen"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"System\GameConfigStore",
+                value_name="GameDVR_FSEBehavior",
+                value_type=winreg.REG_DWORD,
+                enabled_value=2,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="game_shader_cache",
+        name="Enable DirectX Shader Cache",
+        category=TweakCategory.GAMING,
+        description="Allow DirectX to cache compiled shaders so games compile them only once",
+        option=TweakOption(
+            name="enabled",
+            label="Enable shader cache",
+            type="checkbox",
+            default=False,
+            description="Reduces shader stutter on subsequent game launches"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\DirectX",
+                value_name="D3D12_CACHE_DISABLE",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="game_raw_input",
+        name="Disable Pointer Precision (Raw Input)",
+        category=TweakCategory.GAMING,
+        description="Turn off mouse pointer precision (acceleration) for 1:1 raw mouse movement",
+        option=TweakOption(
+            name="enabled",
+            label="Disable pointer precision (raw input)",
+            type="checkbox",
+            default=False,
+            description="Essential for FPS games — mouse moves exactly as far as you physically move it"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="MouseSpeed",
+                value_type=winreg.REG_SZ,
+                enabled_value="0",
+                disabled_value="1"
+            ),
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="MouseThreshold1",
+                value_type=winreg.REG_SZ,
+                enabled_value="0",
+                disabled_value="6"
+            ),
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="MouseThreshold2",
+                value_type=winreg.REG_SZ,
+                enabled_value="0",
+                disabled_value="10"
+            ),
+        ],
+        requires_logoff=True
+    ),
+    Tweak(
+        id="game_high_perf_power",
+        name="Use High Performance Power Plan",
+        category=TweakCategory.GAMING,
+        description="Switch Windows to the High Performance power plan to prevent CPU clock throttling",
+        option=TweakOption(
+            name="enabled",
+            label="Enable High Performance plan",
+            type="checkbox",
+            default=False,
+            description="Keeps CPU at max frequency — eliminates latency spikes caused by clock stepping"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes",
+                value_name="ActivePowerScheme",
+                value_type=winreg.REG_SZ,
+                enabled_value="8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c",
+                disabled_value="381b4222-f694-41f0-9685-ff5bb260df2e"
             )
         ]
     ),

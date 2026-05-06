@@ -60,7 +60,47 @@ python build.py
 - Generalized REG_SZ spinbox conversion in `tweak_manager.py` so future string-typed numeric tweaks need no special handler
 - Bumped to `v2.0.0`
 
+## v2.0.0 Preformance update
+- Added **10 new tweaks** to the Performance tab
+- Performance: configurable drag-window outline, configurable hung-app + wait-to-kill timeouts,etc.
 
+## v2.0.0 ESPPG Update
+
+# Explorer (+5)
+- Hide OneDrive Sync Ads in Explorer
+- Auto-Expand Navigation Pane to Current Folder
+- Show Full Path in Address Bar
+- Skip Recycle Bin Delete Confirmation
+- Color-code Encrypted/Compressed Files
+
+# System (+5)
+- Enable Long File Paths (>260 chars)
+- Show Verbose Boot/Shutdown Status
+- Show Verbose Boot/Shutdown Status
+- Disable UAC for Remote Admin Connections
+- PrtScn Opens Snipping Tool
+- Show Seconds in Taskbar Clock
+
+# Privacy (+5)
+- Disable App Suggestions in Start Menu
+- Disable Windows Tips & Tricks Notifications
+- Disable Post-Update Welcome Screen
+- Disable Automatic Map Downloads
+- Disable Lock Screen Ads & Spotlight
+
+ # Performance (+5)
+- Foreground App Switch Speed (spinbox)
+- Service Shutdown Timeout (spinbox)
+- Clear Pagefile on Shutdown
+- Raise CPU Priority for Games (spinbox)
+- Foreground Process Priority Boost (dropdown)
+
+# Gaming (+5)
+- Disable Multi-Plane Overlay (MPO) — fixes GPU stutters
+- Force Fullscreen Optimizations Off — exclusive fullscreen
+- Enable DirectX Shader Cache
+- Disable Pointer Precision / Raw Input — FPS mouse fix
+- Use High Performance Power Plan
 ## Important!
 -Most features will need pc restart to work, Dont forget to say any bugs you encounter!
 

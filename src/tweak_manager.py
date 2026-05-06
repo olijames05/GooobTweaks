@@ -116,22 +116,47 @@ class TweakManager:
 
         return success
     
-    def _handle_transparency_level(self, tweak: Tweak, value: Any = None, read: bool = False):
-        """Handle taskbar transparency level (0-100)."""
-        change = tweak.registry_changes[0]
+    def _handle_transparency_level(self, _tweak: Tweak, value: Any = None, read: bool = False):
+        """Handle taskbar transparency using Win32 SetLayeredWindowAttributes."""
+        import ctypes
+
+        _PERSIST_KEY = r"Software\WinTweaks"
+        _PERSIST_VALUE = "TaskbarOpacity"
+
         if read:
-            current = read_registry_value(
-                change.hive, change.key_path, change.value_name, default=100
+            stored = read_registry_value(
+                winreg.HKEY_CURRENT_USER, _PERSIST_KEY, _PERSIST_VALUE, default=100
             )
             try:
-                return int(current)
+                return int(stored)
             except (ValueError, TypeError):
                 return 100
-        else:
-            return write_registry_value(
-                change.hive, change.key_path, change.value_name,
-                int(value), change.value_type
+
+        pct = max(0, min(100, int(value)))
+        alpha = int(pct * 255 / 100)
+
+        user32 = ctypes.windll.user32
+        GWL_EXSTYLE = -20
+        WS_EX_LAYERED = 0x00080000
+        LWA_ALPHA = 0x2
+
+        tray_classes = ("Shell_TrayWnd", "Shell_SecondaryTrayWnd")
+        ok = False
+        for cls in tray_classes:
+            hwnd = user32.FindWindowW(cls, None)
+            if not hwnd:
+                continue
+            style = user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+            user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style | WS_EX_LAYERED)
+            if user32.SetLayeredWindowAttributes(hwnd, 0, alpha, LWA_ALPHA):
+                ok = True
+
+        if ok:
+            write_registry_value(
+                winreg.HKEY_CURRENT_USER, _PERSIST_KEY, _PERSIST_VALUE,
+                pct, winreg.REG_DWORD
             )
+        return ok
 
     def _handle_taskbar_position(self, tweak: Tweak, value: Any = None, read: bool = False):
         """Handle taskbar position via StuckRects3 Settings binary."""
