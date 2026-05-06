@@ -10,6 +10,7 @@ from typing import Optional
 
 from PyQt6.QtWidgets import QLabel, QTabWidget, QVBoxLayout, QWidget
 
+from video_wallpaper_panel import VideoWallpaperPanel
 from wallpaper_icons_panel import WallpaperAndIconsPanel
 
 
@@ -30,7 +31,7 @@ class PersonalizationTab(QWidget):
         layout.addWidget(header)
 
         description = QLabel(
-            "Customize wallpapers, icons and fonts."
+            "Customize wallpapers, icons and animated video backgrounds."
         )
         description.setWordWrap(True)
         description.setStyleSheet("color: #666666;")
@@ -38,5 +39,6 @@ class PersonalizationTab(QWidget):
 
         self.tabs = QTabWidget()
         self.tabs.addTab(WallpaperAndIconsPanel(), "Wallpaper & Icons")
+        self.tabs.addTab(VideoWallpaperPanel(), "Video Wallpaper")
 
         layout.addWidget(self.tabs, 1)

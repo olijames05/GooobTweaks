@@ -428,132 +428,6 @@ TASKBAR_TWEAKS = [
         ],
         requires_restart=True
     ),
-    Tweak(
-        id="taskbar_multi_display",
-        name="Show Taskbar on All Displays",
-        category=TweakCategory.TASKBAR,
-        description="Show the taskbar on every connected monitor",
-        option=TweakOption(
-            name="enabled",
-            label="Show on all displays",
-            type="checkbox",
-            default=True,
-            description="Disables this to keep taskbar only on the primary monitor"
-        ),
-        registry_changes=[
-            RegistryChange(
-                hive=winreg.HKEY_CURRENT_USER,
-                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
-                value_name="MMTaskbarEnabled",
-                value_type=winreg.REG_DWORD,
-                enabled_value=1,
-                disabled_value=0
-            )
-        ],
-        requires_restart=True
-    ),
-    Tweak(
-        id="taskbar_multi_mode",
-        name="Multi-Display Taskbar Buttons",
-        category=TweakCategory.TASKBAR,
-        description="Choose where taskbar buttons appear when using multiple monitors",
-        option=TweakOption(
-            name="mode",
-            label="Show buttons on",
-            type="dropdown",
-            default=0,
-            description="Where window buttons appear across multiple displays",
-            choices=[
-                (0, "All taskbars"),
-                (1, "Main taskbar and the one where window is open"),
-                (2, "Taskbar where window is open")
-            ]
-        ),
-        registry_changes=[
-            RegistryChange(
-                hive=winreg.HKEY_CURRENT_USER,
-                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
-                value_name="MMTaskbarMode",
-                value_type=winreg.REG_DWORD,
-                enabled_value=0,
-                disabled_value=0
-            )
-        ],
-        requires_restart=True
-    ),
-    Tweak(
-        id="taskbar_disable_chevron",
-        name="Show All Tray Icons",
-        category=TweakCategory.TASKBAR,
-        description="Always show every system tray icon (no overflow chevron)",
-        option=TweakOption(
-            name="enabled",
-            label="Show all tray icons",
-            type="checkbox",
-            default=False,
-            description="Disables the system tray overflow / chevron arrow"
-        ),
-        registry_changes=[
-            RegistryChange(
-                hive=winreg.HKEY_CURRENT_USER,
-                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer",
-                value_name="EnableAutoTray",
-                value_type=winreg.REG_DWORD,
-                enabled_value=0,
-                disabled_value=1
-            )
-        ],
-        requires_restart=True
-    ),
-    Tweak(
-        id="taskbar_hover_delay",
-        name="Taskbar Thumbnail Hover Delay",
-        category=TweakCategory.TASKBAR,
-        description="Time before taskbar previews appear when hovering",
-        option=TweakOption(
-            name="delay",
-            label="Hover delay (ms)",
-            type="spinbox",
-            default=400,
-            description="0 = instant, higher = longer wait before preview shows",
-            min_value=0,
-            max_value=10000
-        ),
-        registry_changes=[
-            RegistryChange(
-                hive=winreg.HKEY_CURRENT_USER,
-                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
-                value_name="ExtendedUIHoverTime",
-                value_type=winreg.REG_DWORD,
-                enabled_value=None,
-                disabled_value=None
-            )
-        ]
-    ),
-    Tweak(
-        id="taskbar_hide_tray",
-        name="Hide All Notification Area Icons",
-        category=TweakCategory.TASKBAR,
-        description="Completely hide the notification area / system tray",
-        option=TweakOption(
-            name="enabled",
-            label="Hide notification icons",
-            type="checkbox",
-            default=False,
-            description="Removes all icons from the notification area"
-        ),
-        registry_changes=[
-            RegistryChange(
-                hive=winreg.HKEY_CURRENT_USER,
-                key_path=r"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer",
-                value_name="NoTrayItemsDisplay",
-                value_type=winreg.REG_DWORD,
-                enabled_value=1,
-                disabled_value=0
-            )
-        ],
-        requires_restart=True
-    ),
 ]
 
 # =============================================================================
@@ -1279,6 +1153,29 @@ SYSTEM_TWEAKS = [
             )
         ]
     ),
+    Tweak(
+        id="system_disable_winl",
+        name="Disable Win+L Lock Hotkey",
+        category=TweakCategory.SYSTEM,
+        description="Disable the Win+L keyboard shortcut that locks the workstation",
+        option=TweakOption(
+            name="enabled",
+            label="Disable Win+L",
+            type="checkbox",
+            default=False,
+            description="Useful if you keep accidentally locking yourself out"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Policies\System",
+                value_name="DisableLockWorkstation",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
 ]
 
 # =============================================================================
@@ -1421,6 +1318,68 @@ PRIVACY_TWEAKS = [
                 value_type=winreg.REG_DWORD,
                 enabled_value=0,
                 disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="privacy_activity_history",
+        name="Disable Activity History",
+        category=TweakCategory.PRIVACY,
+        description="Stop Windows from collecting activity history (Timeline)",
+        option=TweakOption(
+            name="enabled",
+            label="Disable activity history",
+            type="checkbox",
+            default=False,
+            description="Prevents apps from publishing activities to your account"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows\System",
+                value_name="PublishUserActivities",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            ),
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows\System",
+                value_name="UploadUserActivities",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="privacy_inking_typing",
+        name="Disable Inking & Typing Personalization",
+        category=TweakCategory.PRIVACY,
+        description="Stop Windows from learning from your handwriting and typing",
+        option=TweakOption(
+            name="enabled",
+            label="Disable inking/typing data collection",
+            type="checkbox",
+            default=False,
+            description="Prevents Windows from building a personal dictionary from your input"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\InputPersonalization",
+                value_name="RestrictImplicitTextCollection",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            ),
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\InputPersonalization",
+                value_name="RestrictImplicitInkCollection",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
             )
         ]
     ),
@@ -1572,6 +1531,29 @@ PERFORMANCE_TWEAKS = [
                 value_name="WaitToKillAppTimeout",
                 value_type=winreg.REG_SZ,
                 enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="perf_no_startup_delay",
+        name="Disable Startup Delay",
+        category=TweakCategory.PERFORMANCE,
+        description="Remove the artificial delay before startup apps launch",
+        option=TweakOption(
+            name="enabled",
+            label="Disable startup delay",
+            type="checkbox",
+            default=False,
+            description="Boots straight into your startup apps without the throttling delay"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize",
+                value_name="StartupDelayInMSec",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
                 disabled_value=None
             )
         ]
@@ -3784,6 +3766,45 @@ APPS_SERVICES_TWEAKS = [
                 value_type=winreg.REG_DWORD,
                 enabled_value=1,
                 disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="app_no_silent_promotion",
+        name="Disable Silent Promoted App Installs",
+        category=TweakCategory.APPS_SERVICES,
+        description="Stop Windows from silently auto-installing promoted apps",
+        option=TweakOption(
+            name="enabled",
+            label="Disable silent app installs",
+            type="checkbox",
+            default=False,
+            description="Blocks Candy Crush / Disney / Spotify suggestions auto-installing"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager",
+                value_name="SilentInstalledAppsEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            ),
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager",
+                value_name="OemPreInstalledAppsEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            ),
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager",
+                value_name="PreInstalledAppsEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
             )
         ]
     ),
