@@ -97,6 +97,14 @@ class TweakWidget(QWidget):
             warning.setStyleSheet("color: #d83b01; font-size: 11px;")
             layout.addWidget(warning)
         
+        if self.tweak.requires_restart:
+            restart_button = QPushButton("Restart Explorer")
+            restart_button.setToolTip(
+                "Restart File Explorer to apply this tweak immediately."
+            )
+            restart_button.clicked.connect(self._restart_explorer)
+            layout.addWidget(restart_button)
+        
         # Add separator line
         line = QFrame()
         line.setFrameShape(QFrame.Shape.HLine)
@@ -140,6 +148,37 @@ class TweakWidget(QWidget):
                 f"Failed to apply '{self.tweak.name}'.\n\n"
                 "Make sure you're running WinTweaks as Administrator."
             )
+    
+    def _restart_explorer(self):
+        """Restart File Explorer so restart-required tweaks take effect immediately."""
+        confirm = QMessageBox.question(
+            self,
+            "Restart Explorer",
+            "Restart File Explorer now to apply this change?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
+        if confirm != QMessageBox.StandardButton.Yes:
+            return
+
+        try:
+            import subprocess
+
+            subprocess.run(
+                ["taskkill", "/F", "/IM", "explorer.exe"],
+                capture_output=True,
+            )
+            subprocess.Popen("explorer.exe")
+            QMessageBox.information(
+                self,
+                "WinTweaks",
+                "File Explorer has been restarted.",
+            )
+        except Exception as exc:
+            QMessageBox.warning(
+                self,
+                "WinTweaks",
+                f"Could not restart File Explorer:\n{exc}",
+            )
 
 
 class CategoryPage(QWidget):
@@ -180,10 +219,16 @@ class CategoryPage(QWidget):
             TweakCategory.TASKBAR: "Customize the appearance and behavior of your taskbar.",
             TweakCategory.EXPLORER: "Modify File Explorer settings and appearance.",
             TweakCategory.SYSTEM: "Change system-wide settings and behaviors.",
+            TweakCategory.NETWORK: "Tweak networking, IPv6, SMB and connectivity.",
+            TweakCategory.POWER: "Power, battery, sleep and hibernation settings.",
+            TweakCategory.GAMING: "Optimize Windows for gaming and competitive play.",
             TweakCategory.PRIVACY: "Control privacy settings and data collection.",
             TweakCategory.PERFORMANCE: "Optimize system performance.",
+            TweakCategory.SECURITY: "Configure UAC, SmartScreen and Defender settings.",
+            TweakCategory.APPS_SERVICES: "Disable bundled apps and unwanted services.",
             TweakCategory.CONTEXT_MENU: "Customize right-click context menus.",
             TweakCategory.PERSONALIZATION: "Customize visual appearance and effects.",
+            TweakCategory.ACCESSIBILITY: "Tune mouse, keyboard and visual accessibility.",
         }
         
         desc = QLabel(descriptions.get(self.category, ""))
@@ -248,7 +293,7 @@ class MainWindow(QMainWindow):
         title.setStyleSheet("padding: 10px 15px; color: #333333;")
         sidebar_layout.addWidget(title)
         
-        version = QLabel("v1.0.0")
+        version = QLabel("v2.2.5")
         version.setStyleSheet("padding: 0 15px 15px 15px; color: #888888; font-size: 11px;")
         sidebar_layout.addWidget(version)
         
@@ -298,7 +343,7 @@ class MainWindow(QMainWindow):
         self.category_pages = {}
         for category in TweakCategory:
             if category == TweakCategory.PERSONALIZATION:
-                # Use special personalization tab with wallpaper/fonts
+                # Use special personalization tab
                 page = PersonalizationTab()
             else:
                 page = CategoryPage(category, self.manager)
