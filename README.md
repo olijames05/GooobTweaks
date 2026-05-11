@@ -5,6 +5,14 @@ A Windows system-tweaking tool inspired by GNOME Tweaks — customize and optimi
 
 ---
 
+## Screenshots
+
+| Taskbar | Network |
+|---|---|
+| ![Taskbar tab](screenshots/taskbar.png) | ![Network tab](screenshots/network.png) |
+
+---
+
 ## What's new in v2.5.0
 
 | Feature | Details |
