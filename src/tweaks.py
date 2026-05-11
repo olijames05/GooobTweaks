@@ -23,6 +23,11 @@ class TweakCategory(Enum):
     CONTEXT_MENU = "Context Menu"
     PERSONALIZATION = "Personalization"
     ACCESSIBILITY = "Accessibility"
+    DISPLAY = "Display"
+    MOUSE_INPUT = "Mouse & Input"
+    STARTUP_BOOT = "Startup & Boot"
+    NOTIFICATIONS = "Notifications"
+    DEVELOPER = "Developer Tools"
 
 
 @dataclass
@@ -6407,6 +6412,2976 @@ APPS_SERVICES_TWEAKS = [
 ]
 
 # =============================================================================
+# DISPLAY TWEAKS
+# =============================================================================
+
+DISPLAY_TWEAKS = [
+    Tweak(
+        id="disp_dpi_scaling_mode",
+        name="DPI Scaling Awareness Mode",
+        category=TweakCategory.DISPLAY,
+        description="Set the system-wide DPI awareness mode for legacy applications",
+        option=TweakOption(
+            name="mode",
+            label="DPI mode",
+            type="dropdown",
+            default="PerMonitorV2",
+            description="PerMonitorV2 is best for multi-monitor setups with different scales",
+            choices=[
+                ("PerMonitorV2", "Per-Monitor v2 (recommended)"),
+                ("PerMonitor", "Per-Monitor v1"),
+                ("System", "System DPI"),
+                ("Unaware", "DPI Unaware (legacy)")
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop",
+                value_name="DpiScalingVer",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_font_dpi",
+        name="Custom Font DPI Override",
+        category=TweakCategory.DISPLAY,
+        description="Override the system font DPI (dots per inch) used for text sizing",
+        option=TweakOption(
+            name="dpi",
+            label="Font DPI",
+            type="spinbox",
+            default=96,
+            description="96=100%, 120=125%, 144=150%, 192=200%. Requires sign-out.",
+            min_value=72,
+            max_value=288
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop",
+                value_name="LogPixels",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ],
+        requires_logoff=True
+    ),
+    Tweak(
+        id="disp_night_light",
+        name="Night Light (Blue Light Filter)",
+        category=TweakCategory.DISPLAY,
+        description="Enable the built-in Night Light blue-light reduction filter",
+        option=TweakOption(
+            name="enabled",
+            label="Enable Night Light",
+            type="checkbox",
+            default=False,
+            description="Warms screen color temperature to reduce eye strain in low-light environments"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\CloudStore\Store\DefaultAccount\Current\default$windows.data.bluelightreduction.bluelightreductionstate\windows.data.bluelightreduction.bluelightreductionstate",
+                value_name="Data",
+                value_type=winreg.REG_BINARY,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_snap_layout_hover",
+        name="Show Snap Layouts on Hover",
+        category=TweakCategory.DISPLAY,
+        description="Show Snap Layout grid when hovering the maximize button (Windows 11)",
+        option=TweakOption(
+            name="enabled",
+            label="Show Snap Layouts on hover",
+            type="checkbox",
+            default=True,
+            description="Hovering the maximize button reveals the Snap Layout picker"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="EnableSnapAssistFlyout",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_snap_window_suggest",
+        name="Snap Window Suggestions",
+        category=TweakCategory.DISPLAY,
+        description="Show suggested windows to snap alongside the current window",
+        option=TweakOption(
+            name="enabled",
+            label="Enable snap suggestions",
+            type="checkbox",
+            default=True,
+            description="After snapping a window, Windows suggests other windows to fill the remaining space"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="SnapAssist",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_multimon_taskbar",
+        name="Show Taskbar on All Monitors",
+        category=TweakCategory.DISPLAY,
+        description="Display the taskbar on every monitor in a multi-display setup",
+        option=TweakOption(
+            name="enabled",
+            label="Taskbar on all monitors",
+            type="checkbox",
+            default=True,
+            description="Each monitor gets its own taskbar; disable for a single primary taskbar"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="MMTaskbarEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_multimon_taskbar_mode",
+        name="Multi-Monitor Taskbar Button Mode",
+        category=TweakCategory.DISPLAY,
+        description="Control which taskbar shows buttons for open windows on multi-monitor setups",
+        option=TweakOption(
+            name="mode",
+            label="Button mode",
+            type="dropdown",
+            default=0,
+            description="Choose where window buttons appear across your monitors",
+            choices=[
+                (0, "All taskbars"),
+                (1, "Main taskbar + window's monitor"),
+                (2, "Window's monitor only")
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="MMTaskbarMode",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_virtual_desktop_persist",
+        name="Show All Virtual Desktop Windows on Taskbar",
+        category=TweakCategory.DISPLAY,
+        description="Show buttons for windows from all virtual desktops on the taskbar",
+        option=TweakOption(
+            name="enabled",
+            label="Show all desktops on taskbar",
+            type="checkbox",
+            default=False,
+            description="When enabled you see every window regardless of which virtual desktop is active"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="VirtualDesktopTaskbarFilter",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_virtual_desktop_alt_tab",
+        name="Alt+Tab Shows All Virtual Desktop Windows",
+        category=TweakCategory.DISPLAY,
+        description="Include windows from all virtual desktops in the Alt+Tab switcher",
+        option=TweakOption(
+            name="enabled",
+            label="All desktops in Alt+Tab",
+            type="checkbox",
+            default=False,
+            description="Disable to see only the current virtual desktop's windows in Alt+Tab"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="VirtualDesktopAltTabFilter",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_wallpaper_quality",
+        name="Desktop Wallpaper JPEG Quality",
+        category=TweakCategory.DISPLAY,
+        description="Set the JPEG compression quality Windows uses when processing wallpapers",
+        option=TweakOption(
+            name="quality",
+            label="Quality (0–100)",
+            type="spinbox",
+            default=90,
+            description="Default is 75; raise to 100 to prevent lossy compression of your wallpaper",
+            min_value=0,
+            max_value=100
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop",
+                value_name="JPEGImportQuality",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_dynamic_refresh_rate",
+        name="Dynamic Refresh Rate (DRR)",
+        category=TweakCategory.DISPLAY,
+        description="Allow Windows 11 to boost refresh rate during scrolling and animations (VRR panel required)",
+        option=TweakOption(
+            name="enabled",
+            label="Enable Dynamic Refresh Rate",
+            type="checkbox",
+            default=False,
+            description="Requires a variable-refresh-rate display; saves power while scrolling at high Hz"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows NT\CurrentVersion\dwm",
+                value_name="DRREnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_hw_accelerated_compositing",
+        name="Disable DWM Hardware Compositing",
+        category=TweakCategory.DISPLAY,
+        description="Force DWM to use software compositing (debug / compatibility use)",
+        option=TweakOption(
+            name="enabled",
+            label="Disable HW compositing",
+            type="checkbox",
+            default=False,
+            description="⚠ Severely degrades visual performance; only useful for diagnosing GPU driver issues"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\DWM",
+                value_name="DisableHWAcceleration",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="disp_disable_gdi_scaling",
+        name="Disable GDI DPI Scaling for Blurry Apps Fix",
+        category=TweakCategory.DISPLAY,
+        description="Stop Windows from auto-scaling legacy GDI apps (can cause blur on hi-DPI)",
+        option=TweakOption(
+            name="enabled",
+            label="Disable GDI DPI scaling",
+            type="checkbox",
+            default=False,
+            description="Legacy apps will be crisp but tiny on 4K; modern apps unaffected"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\SideBySide",
+                value_name="PreferExternalManifest",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_monitor_timeout_ac",
+        name="Monitor Sleep Timeout on AC Power (minutes)",
+        category=TweakCategory.DISPLAY,
+        description="Set how many minutes of inactivity before the monitor turns off on AC",
+        option=TweakOption(
+            name="minutes",
+            label="Timeout (minutes, 0=never)",
+            type="spinbox",
+            default=10,
+            description="0 = never turn off. Applies to the active power plan.",
+            min_value=0,
+            max_value=240
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Power\PowerSettings\3C0BC021-C8A8-4E07-A973-6B14CBCB2B7E",
+                value_name="ACSettingIndex",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_cleartype_enabled",
+        name="ClearType Font Rendering",
+        category=TweakCategory.DISPLAY,
+        description="Enable or disable ClearType subpixel anti-aliasing for LCD text",
+        option=TweakOption(
+            name="enabled",
+            label="Enable ClearType",
+            type="checkbox",
+            default=True,
+            description="ClearType improves text readability on LCD screens; disable for OLED/4K/print-sharp text"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop",
+                value_name="FontSmoothingType",
+                value_type=winreg.REG_DWORD,
+                enabled_value=2,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_cursor_blink_rate",
+        name="Text Cursor Blink Rate",
+        category=TweakCategory.DISPLAY,
+        description="Set how fast the text cursor blinks in editors and text fields",
+        option=TweakOption(
+            name="rate",
+            label="Blink rate (ms, -1=no blink)",
+            type="spinbox",
+            default=530,
+            description="530ms = Windows default. Set -1 to disable blinking entirely.",
+            min_value=-1,
+            max_value=2000
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop",
+                value_name="CursorBlinkRate",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_taskbar_thumbnail_delay",
+        name="Taskbar Thumbnail Preview Delay",
+        category=TweakCategory.DISPLAY,
+        description="Set the delay before taskbar thumbnail previews appear on hover",
+        option=TweakOption(
+            name="delay",
+            label="Delay (ms)",
+            type="spinbox",
+            default=400,
+            description="Lower = faster preview; 0 = instant; default is 400ms",
+            min_value=0,
+            max_value=2000
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="ExtendedUIHoverTime",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_show_color_calibration",
+        name="Show Color Calibration on Startup",
+        category=TweakCategory.DISPLAY,
+        description="Run the display color calibration tool automatically at login",
+        option=TweakOption(
+            name="enabled",
+            label="Run calibration at startup",
+            type="checkbox",
+            default=False,
+            description="Loads the ICC color profile calibration loader on each sign-in"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\ICM",
+                value_name="Calibration0",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_disable_rotation_lock",
+        name="Disable Display Auto-Rotation Lock",
+        category=TweakCategory.DISPLAY,
+        description="Prevent Windows from locking screen rotation on convertible/tablet devices",
+        option=TweakOption(
+            name="enabled",
+            label="Disable rotation lock",
+            type="checkbox",
+            default=False,
+            description="Tablet/2-in-1 only: allows display to rotate freely based on accelerometer"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\AutoRotation",
+                value_name="Enable",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_hide_desktop_icons",
+        name="Hide All Desktop Icons",
+        category=TweakCategory.DISPLAY,
+        description="Completely hide all icons on the desktop for a clean look",
+        option=TweakOption(
+            name="enabled",
+            label="Hide desktop icons",
+            type="checkbox",
+            default=False,
+            description="Icons are still there — just invisible. Right-click desktop → View → Show Desktop Icons to restore"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="HideIcons",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_window_snap_across_monitors",
+        name="Snap Windows Across Monitor Boundaries",
+        category=TweakCategory.DISPLAY,
+        description="Allow windows to snap to the edges between monitors",
+        option=TweakOption(
+            name="enabled",
+            label="Cross-monitor snapping",
+            type="checkbox",
+            default=True,
+            description="Disable to prevent accidentally snapping a window to another screen"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop",
+                value_name="MonitorSnapToEdges",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="disp_win_animation_speed",
+        name="Window Open/Close Animation Speed",
+        category=TweakCategory.DISPLAY,
+        description="Control how fast window open, close and minimize animations play",
+        option=TweakOption(
+            name="speed",
+            label="Animation duration (ms)",
+            type="spinbox",
+            default=200,
+            description="Lower = snappier; 0 = instant; Windows default is ~200ms",
+            min_value=0,
+            max_value=1000
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop\WindowMetrics",
+                value_name="MinAnimate",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+]
+
+# =============================================================================
+# MOUSE & INPUT TWEAKS
+# =============================================================================
+
+MOUSE_INPUT_TWEAKS = [
+    Tweak(
+        id="input_mouse_dpi_hint",
+        name="Mouse Sensitivity (Control Panel)",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Set Windows pointer speed — separate from your mouse's hardware DPI",
+        option=TweakOption(
+            name="speed",
+            label="Speed (1–20)",
+            type="spinbox",
+            default=10,
+            description="Windows default is 10; hardware DPI in your mouse software is independent",
+            min_value=1,
+            max_value=20
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="MouseSensitivity",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="input_enhance_pointer_precision",
+        name="Enhance Pointer Precision (Mouse Acceleration)",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Enable or disable Windows mouse acceleration curve",
+        option=TweakOption(
+            name="enabled",
+            label="Enable pointer precision",
+            type="checkbox",
+            default=True,
+            description="Disable for raw 1:1 input — essential for FPS gaming and precise work"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="MouseSpeed",
+                value_type=winreg.REG_SZ,
+                enabled_value="1",
+                disabled_value="0"
+            ),
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="MouseThreshold1",
+                value_type=winreg.REG_SZ,
+                enabled_value="6",
+                disabled_value="0"
+            ),
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="MouseThreshold2",
+                value_type=winreg.REG_SZ,
+                enabled_value="10",
+                disabled_value="0"
+            )
+        ]
+    ),
+    Tweak(
+        id="input_scroll_lines",
+        name="Mouse Wheel Scroll Lines",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Set how many lines scroll per wheel notch",
+        option=TweakOption(
+            name="lines",
+            label="Lines per scroll",
+            type="spinbox",
+            default=3,
+            description="Windows default is 3; raise to 5–10 for faster scrolling in documents",
+            min_value=1,
+            max_value=20
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop",
+                value_name="WheelScrollLines",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="input_scroll_chars",
+        name="Mouse Wheel Horizontal Scroll Characters",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Set characters scrolled per horizontal wheel tilt",
+        option=TweakOption(
+            name="chars",
+            label="Characters per tilt",
+            type="spinbox",
+            default=3,
+            description="Affects horizontal scrolling with tilt wheels; default is 3",
+            min_value=1,
+            max_value=20
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Desktop",
+                value_name="WheelScrollChars",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="input_double_click_speed",
+        name="Double-Click Speed",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Set the maximum time interval between two clicks to register as a double-click",
+        option=TweakOption(
+            name="speed",
+            label="Speed (100–900 ms)",
+            type="spinbox",
+            default=500,
+            description="Lower = faster double-click required; default Windows is 500ms",
+            min_value=100,
+            max_value=900
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="DoubleClickSpeed",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="input_swap_mouse_buttons",
+        name="Swap Primary/Secondary Mouse Buttons",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Switch left and right mouse button functions (left-handed mouse setup)",
+        option=TweakOption(
+            name="enabled",
+            label="Swap mouse buttons",
+            type="checkbox",
+            default=False,
+            description="Right button becomes the primary click — useful for left-handed users"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="SwapMouseButtons",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="input_touchpad_sensitivity",
+        name="Touchpad Sensitivity",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Adjust Windows Precision Touchpad sensitivity level",
+        option=TweakOption(
+            name="level",
+            label="Sensitivity",
+            type="dropdown",
+            default=3,
+            description="Controls how easily accidental touches are ignored",
+            choices=[
+                (0, "Most sensitive"),
+                (1, "High"),
+                (2, "Medium"),
+                (3, "Low (default)"),
+                (4, "Least sensitive")
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\PrecisionTouchPad",
+                value_name="AAPThreshold",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="input_touchpad_tap_to_click",
+        name="Touchpad Tap to Click",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Enable or disable tap-to-click on Windows Precision Touchpad",
+        option=TweakOption(
+            name="enabled",
+            label="Enable tap to click",
+            type="checkbox",
+            default=True,
+            description="Touching the touchpad surface registers as a left click"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\PrecisionTouchPad",
+                value_name="TapsEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="input_touchpad_two_finger_tap",
+        name="Touchpad Two-Finger Tap (Right-Click)",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Enable two-finger tap as right-click on Precision Touchpad",
+        option=TweakOption(
+            name="enabled",
+            label="Two-finger tap = right-click",
+            type="checkbox",
+            default=True,
+            description="Tapping with two fingers simultaneously triggers a right-click context menu"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\PrecisionTouchPad",
+                value_name="TwoFingerTapEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="input_touchpad_three_finger_tap",
+        name="Touchpad Three-Finger Tap Action",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Set what happens when you tap with three fingers on the touchpad",
+        option=TweakOption(
+            name="action",
+            label="Action",
+            type="dropdown",
+            default=2,
+            description="Three-finger tap shortcut",
+            choices=[
+                (0, "Nothing"),
+                (1, "Middle click"),
+                (2, "Search / Cortana"),
+                (3, "Action Center")
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\PrecisionTouchPad",
+                value_name="ThreeFingerTapEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="input_touchpad_zoom",
+        name="Touchpad Pinch to Zoom",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Enable or disable pinch-to-zoom gesture on the touchpad",
+        option=TweakOption(
+            name="enabled",
+            label="Enable pinch to zoom",
+            type="checkbox",
+            default=True,
+            description="Two-finger pinch gesture zooms content in supported apps"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\PrecisionTouchPad",
+                value_name="ZoomEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="input_touchpad_scroll_direction",
+        name="Touchpad Scroll Direction",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Choose between natural (content follows finger) and traditional scroll direction",
+        option=TweakOption(
+            name="enabled",
+            label="Natural scrolling (reversed)",
+            type="checkbox",
+            default=False,
+            description="Natural = content moves with your finger (iOS/macOS style)"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\PrecisionTouchPad",
+                value_name="ScrollDirection",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="input_raw_mouse_input",
+        name="Force Raw Mouse Input",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Hint to the system to prefer raw HID mouse input over accelerated Win32 cursor",
+        option=TweakOption(
+            name="enabled",
+            label="Prefer raw mouse input",
+            type="checkbox",
+            default=False,
+            description="Bypasses Windows cursor processing for lowest-latency input in games"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows",
+                value_name="USBMousePollRate",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1000,
+                disabled_value=125
+            )
+        ]
+    ),
+    Tweak(
+        id="input_keyboard_layout",
+        name="Disable Keyboard Layout Switching Shortcut",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Disable the Alt+Shift / Ctrl+Shift hotkey that switches keyboard layouts",
+        option=TweakOption(
+            name="enabled",
+            label="Disable layout switch shortcut",
+            type="checkbox",
+            default=False,
+            description="Prevents accidental language/layout changes while typing"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Keyboard Layout\Toggle",
+                value_name="Language Hotkey",
+                value_type=winreg.REG_SZ,
+                enabled_value="3",
+                disabled_value="1"
+            )
+        ]
+    ),
+    Tweak(
+        id="input_ime_cand_window",
+        name="IME Candidate Window Mode",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Set IME (Input Method Editor) candidate window position preference",
+        option=TweakOption(
+            name="mode",
+            label="Window position",
+            type="dropdown",
+            default=0,
+            description="Affects CJK input method suggestion windows",
+            choices=[
+                (0, "Follow caret"),
+                (1, "Fixed position"),
+                (2, "Edge of screen")
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\IME\15.0\IMEJP\MSIME",
+                value_name="CandidateWindowPosMode",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="input_num_lock_login",
+        name="NumLock State at Login Screen",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Set whether NumLock is on or off at the Windows login screen",
+        option=TweakOption(
+            name="enabled",
+            label="NumLock ON at login",
+            type="checkbox",
+            default=True,
+            description="NumLock on by default saves a keypress when entering numeric passwords"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_USERS,
+                key_path=r".DEFAULT\Control Panel\Keyboard",
+                value_name="InitialKeyboardIndicators",
+                value_type=winreg.REG_SZ,
+                enabled_value="2",
+                disabled_value="0"
+            )
+        ]
+    ),
+    Tweak(
+        id="input_keyboard_backlight_timeout",
+        name="Keyboard Backlight Timeout",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Set how quickly the keyboard backlight turns off (laptop keyboards)",
+        option=TweakOption(
+            name="timeout",
+            label="Timeout (seconds, 0=always on)",
+            type="spinbox",
+            default=30,
+            description="Reduces battery drain; 0 keeps backlight on whenever the display is on",
+            min_value=0,
+            max_value=300
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Power\PowerSettings\7516b95f-f776-4464-8c53-06167f40cc99\4faab71a-92e5-4726-b1e6-2636e4e807cb",
+                value_name="ACSettingIndex",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="input_mouse_hover_time",
+        name="Mouse Hover Dwell Time",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Milliseconds the cursor must stay over a control before hover events fire",
+        option=TweakOption(
+            name="time",
+            label="Hover time (ms)",
+            type="spinbox",
+            default=400,
+            description="Lower = faster tooltip/hover response; Windows default 400ms",
+            min_value=10,
+            max_value=2000
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="MouseHoverTime",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="input_disable_touchscreen",
+        name="Disable Touchscreen Input",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Disable the touchscreen digitizer (useful for touch-panel PCs used with mouse only)",
+        option=TweakOption(
+            name="enabled",
+            label="Disable touchscreen",
+            type="checkbox",
+            default=False,
+            description="Prevents accidental touches while typing on convertible laptops"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows\TabletPC",
+                value_name="TurnOffSingleFingerPanning",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="input_mouse_sonar",
+        name="Show Mouse Location on Ctrl Press (Sonar)",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Press Ctrl to briefly highlight the mouse cursor location with a circle",
+        option=TweakOption(
+            name="enabled",
+            label="Enable mouse sonar",
+            type="checkbox",
+            default=False,
+            description="Useful on large or multi-monitor setups when you lose track of the cursor"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="MouseSonar",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="input_pointer_snap_default",
+        name="Snap Pointer to Default Button",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Automatically move the cursor to the default button when a dialog opens",
+        option=TweakOption(
+            name="enabled",
+            label="Snap to default button",
+            type="checkbox",
+            default=False,
+            description="Saves mouse movement in repetitive dialogs; can be surprising if unexpected"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Mouse",
+                value_name="SnapToDefaultButton",
+                value_type=winreg.REG_SZ,
+                enabled_value="1",
+                disabled_value="0"
+            )
+        ]
+    ),
+    Tweak(
+        id="input_gamepad_vibration",
+        name="Disable Controller Vibration (System-wide hint)",
+        category=TweakCategory.MOUSE_INPUT,
+        description="Hint to disable vibration for XInput game controllers",
+        option=TweakOption(
+            name="enabled",
+            label="Disable gamepad vibration",
+            type="checkbox",
+            default=False,
+            description="Reduces distraction and saves battery on wireless controllers"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\XInput",
+                value_name="NoVibration",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+]
+
+# =============================================================================
+# STARTUP & BOOT TWEAKS
+# =============================================================================
+
+STARTUP_BOOT_TWEAKS = [
+    Tweak(
+        id="boot_timeout",
+        name="Boot Menu Timeout",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Seconds the boot menu waits before auto-selecting the default OS",
+        option=TweakOption(
+            name="seconds",
+            label="Timeout (seconds)",
+            type="spinbox",
+            default=30,
+            description="Set to 5 for fast single-OS boots; set higher if you dual-boot",
+            min_value=0,
+            max_value=999
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Boot Execute",
+                value_name="BootExecute",
+                value_type=winreg.REG_MULTI_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_verbose_messages",
+        name="Verbose Boot/Shutdown Messages",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Show detailed status messages during Windows startup and shutdown",
+        option=TweakOption(
+            name="enabled",
+            label="Show verbose messages",
+            type="checkbox",
+            default=False,
+            description="Displays 'Starting services…', 'Stopping X…' instead of the spinning dots"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System",
+                value_name="VerboseStatus",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_auto_restart_bsod",
+        name="Auto-Restart After BSOD",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Control whether Windows automatically reboots after a blue screen crash",
+        option=TweakOption(
+            name="enabled",
+            label="Auto-restart after BSOD",
+            type="checkbox",
+            default=True,
+            description="Disable to keep the BSOD on screen so you can read the error code"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\CrashControl",
+                value_name="AutoReboot",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_bsod_beep",
+        name="Beep on BSOD",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Play a system beep when a kernel crash (BSOD) occurs",
+        option=TweakOption(
+            name="enabled",
+            label="Beep on BSOD",
+            type="checkbox",
+            default=True,
+            description="Useful on headless/server systems to audibly alert you to a crash"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\CrashControl",
+                value_name="Beep",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_overwrite_existing_dump",
+        name="Overwrite Existing Crash Dump",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Replace the previous crash dump file rather than appending a new one",
+        option=TweakOption(
+            name="enabled",
+            label="Overwrite crash dump",
+            type="checkbox",
+            default=True,
+            description="Keeps disk usage predictable; disable to accumulate dumps for later analysis"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\CrashControl",
+                value_name="Overwrite",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_last_known_good",
+        name="Enable Last Known Good Configuration",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Preserve the Last Known Good boot configuration entry in the boot menu",
+        option=TweakOption(
+            name="enabled",
+            label="Keep Last Known Good entry",
+            type="checkbox",
+            default=True,
+            description="Allows recovery via boot menu if a driver or service breaks the system"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Configuration Manager",
+                value_name="LastKnownGood",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_startup_delay",
+        name="Startup Program Launch Delay",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Delay before startup programs are launched after login (seconds)",
+        option=TweakOption(
+            name="delay",
+            label="Delay (seconds)",
+            type="spinbox",
+            default=10,
+            description="Spreading startup programs out reduces the initial login slowdown",
+            min_value=0,
+            max_value=120
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize",
+                value_name="StartupDelayInMSec",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_disable_startup_animation",
+        name="Disable Windows Startup Animation",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Skip the spinning dots boot animation for a faster perceived boot",
+        option=TweakOption(
+            name="enabled",
+            label="Disable startup animation",
+            type="checkbox",
+            default=False,
+            description="Removes the spinning circle animation; boot time is the same but it feels faster"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System",
+                value_name="DisableStartupAnimation",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="boot_disable_first_logon_animation",
+        name="Disable First Logon Animation",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Skip the 'Hi! We're getting everything ready for you' first-logon experience",
+        option=TweakOption(
+            name="enabled",
+            label="Disable first logon animation",
+            type="checkbox",
+            default=False,
+            description="Skips the animated welcome screen on new user accounts or after major updates"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
+                value_name="EnableFirstLogonAnimation",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_legal_notice_title",
+        name="Custom Login Screen Legal Notice Title",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Show a custom title banner on the Windows login screen",
+        option=TweakOption(
+            name="title",
+            label="Notice title text",
+            type="spinbox",
+            default=0,
+            description="Leave blank to disable. Use registry editor to set custom text.",
+            min_value=0,
+            max_value=0
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
+                value_name="LegalNoticeCaption",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_shutdown_timeout",
+        name="System Shutdown Wait Timeout",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Maximum seconds Windows waits for services to stop before force-shutting down",
+        option=TweakOption(
+            name="seconds",
+            label="Timeout (ms)",
+            type="spinbox",
+            default=5000,
+            description="Default 5000ms (5s). Lower to 2000ms for faster shutdowns.",
+            min_value=1000,
+            max_value=20000
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control",
+                value_name="WaitToKillServiceTimeout",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_fast_startup_control",
+        name="Fast Startup / Hiberboot",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Hybrid shutdown that saves kernel state to disk for faster next boot",
+        option=TweakOption(
+            name="enabled",
+            label="Enable Fast Startup",
+            type="checkbox",
+            default=True,
+            description="Speeds up boot but can cause issues with dual-boot and full Windows Updates"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Power",
+                value_name="HiberbootEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_num_processors",
+        name="Boot with Multiple Processors",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Enable multi-processor boot to use all CPU cores during startup (MSCONFIG equivalent)",
+        option=TweakOption(
+            name="enabled",
+            label="Multi-processor boot",
+            type="checkbox",
+            default=False,
+            description="Forces Windows to boot using all available CPU cores instead of a single core"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management",
+                value_name="PhysicalAddressExtension",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="boot_app_recovery_interval",
+        name="Application Recovery Interval",
+        category=TweakCategory.STARTUP_BOOT,
+        description="How often (ms) Windows checkpoints application state for crash recovery",
+        option=TweakOption(
+            name="interval",
+            label="Interval (ms)",
+            type="spinbox",
+            default=60000,
+            description="Lower = more frequent checkpoints = more disk I/O; default 60000 (1 min)",
+            min_value=5000,
+            max_value=300000
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\ApplicationRecovery",
+                value_name="PingInterval",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_event_log_max_size",
+        name="System Event Log Maximum Size",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Set the maximum size of the Windows System event log file",
+        option=TweakOption(
+            name="size",
+            label="Max size (KB)",
+            type="spinbox",
+            default=20480,
+            description="Default 20480 KB (20MB). Raise for servers that need long log history.",
+            min_value=1024,
+            max_value=1048576
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Services\EventLog\System",
+                value_name="MaxSize",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_app_event_log_size",
+        name="Application Event Log Maximum Size",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Set the maximum size of the Windows Application event log file",
+        option=TweakOption(
+            name="size",
+            label="Max size (KB)",
+            type="spinbox",
+            default=20480,
+            description="Raise if applications log frequently and you need history beyond default 20MB",
+            min_value=1024,
+            max_value=1048576
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Services\EventLog\Application",
+                value_name="MaxSize",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_disable_windows_error_reporting_ui",
+        name="Disable Windows Error Reporting UI",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Suppress the 'Windows is looking for a solution to the problem' dialog",
+        option=TweakOption(
+            name="enabled",
+            label="Disable WER dialog",
+            type="checkbox",
+            default=False,
+            description="Crashes are still logged but no dialog pops up asking to report them"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\Windows Error Reporting",
+                value_name="DontShowUI",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_background_apps_on_battery",
+        name="Disable Background App Refresh on Battery",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Stop UWP apps from refreshing in the background when on battery power",
+        option=TweakOption(
+            name="enabled",
+            label="Disable background refresh on battery",
+            type="checkbox",
+            default=False,
+            description="Extends battery life by pausing app updates until plugged in"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows\AppPrivacy",
+                value_name="LetAppsRunInBackground",
+                value_type=winreg.REG_DWORD,
+                enabled_value=2,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_disable_auto_update_relaunch",
+        name="Disable App Auto-Relaunch After Update Reboot",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Prevent Windows from automatically reopening apps after an update restart",
+        option=TweakOption(
+            name="enabled",
+            label="Disable auto-relaunch after update",
+            type="checkbox",
+            default=False,
+            description="After a forced update reboot, Windows won't reopen your previous apps"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows NT\CurrentVersion\Winlogon",
+                value_name="RestartApps",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="boot_clear_temp_on_startup",
+        name="Clear Temp Folder on Startup",
+        category=TweakCategory.STARTUP_BOOT,
+        description="Automatically delete temporary files at every Windows startup",
+        option=TweakOption(
+            name="enabled",
+            label="Clear temp on startup",
+            type="checkbox",
+            default=False,
+            description="Cleans %TEMP% on boot; frees disk space but slightly increases startup time"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System",
+                value_name="ClearTempFilesAtBoot",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+]
+
+# =============================================================================
+# NOTIFICATIONS TWEAKS
+# =============================================================================
+
+NOTIFICATIONS_TWEAKS = [
+    Tweak(
+        id="notif_focus_assist_off",
+        name="Disable Focus Assist (Do Not Disturb)",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Turn off Focus Assist so all notifications come through immediately",
+        option=TweakOption(
+            name="enabled",
+            label="Disable Focus Assist",
+            type="checkbox",
+            default=False,
+            description="When enabled, all banners and sounds play without any DND filtering"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\$$windows.data.notifications.quiethourssettings\Current",
+                value_name="Data",
+                value_type=winreg.REG_BINARY,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_toast_duration",
+        name="Toast Notification Duration",
+        category=TweakCategory.NOTIFICATIONS,
+        description="How long toast notification banners stay on screen before fading",
+        option=TweakOption(
+            name="duration",
+            label="Duration",
+            type="dropdown",
+            default="5",
+            description="Longer duration gives more time to read and act on notifications",
+            choices=[
+                ("5", "5 seconds (default)"),
+                ("7", "7 seconds"),
+                ("15", "15 seconds"),
+                ("25", "25 seconds"),
+                ("30", "30 seconds")
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Control Panel\Accessibility",
+                value_name="MessageDuration",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_disable_all",
+        name="Disable All Notifications",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Suppress all app notifications system-wide via policy",
+        option=TweakOption(
+            name="enabled",
+            label="Disable all notifications",
+            type="checkbox",
+            default=False,
+            description="No banners, no sounds, no Action Center entries from any app"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows\Explorer",
+                value_name="DisableNotificationCenter",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_disable_lock_screen",
+        name="Disable Notifications on Lock Screen",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Hide notification content on the lock screen for privacy",
+        option=TweakOption(
+            name="enabled",
+            label="Hide lock screen notifications",
+            type="checkbox",
+            default=False,
+            description="Notifications won't show on the lock screen; reduces privacy exposure"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows\System",
+                value_name="DisableLockScreenAppNotifications",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_taskbar_badge",
+        name="Show App Badges on Taskbar Buttons",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Display unread count badges on taskbar app buttons",
+        option=TweakOption(
+            name="enabled",
+            label="Show taskbar badges",
+            type="checkbox",
+            default=True,
+            description="Small number overlays on taskbar icons show unread notifications count"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="TaskbarBadges",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_action_center",
+        name="Disable Action Center",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Remove the Action Center / notification panel entirely",
+        option=TweakOption(
+            name="enabled",
+            label="Disable Action Center",
+            type="checkbox",
+            default=False,
+            description="The bell icon and sliding panel are hidden; notifications are still delivered in background"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Policies\Microsoft\Windows\Explorer",
+                value_name="DisableNotificationCenter",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_windows_update_restart",
+        name="Suppress Update Restart Notifications",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Stop Windows Update from showing 'Your device needs to restart' prompts",
+        option=TweakOption(
+            name="enabled",
+            label="Suppress update restart prompts",
+            type="checkbox",
+            default=False,
+            description="You control when to reboot; Windows won't nag you with restart reminders"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate",
+                value_name="SetAutoRestartNotificationConfig",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_security_center_alerts",
+        name="Disable Windows Security Center Alerts",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Stop Windows Security Center from showing tray alerts and notifications",
+        option=TweakOption(
+            name="enabled",
+            label="Disable Security Center alerts",
+            type="checkbox",
+            default=False,
+            description="Security features still run — you just won't see alert popups"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows Defender Security Center\Notifications",
+                value_name="DisableNotifications",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_system_sounds",
+        name="Disable System Notification Sounds",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Mute the sounds that play for system events (errors, USB connect, etc.)",
+        option=TweakOption(
+            name="enabled",
+            label="Disable system sounds",
+            type="checkbox",
+            default=False,
+            description="Sets the sound scheme to 'No Sounds' — visual notifications still appear"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"AppEvents\Schemes",
+                value_name="",
+                value_type=winreg.REG_SZ,
+                enabled_value=".None",
+                disabled_value=".Default"
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_new_app_alert",
+        name="Disable New App Installation Notifications",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Stop Windows from notifying you when a new app is installed",
+        option=TweakOption(
+            name="enabled",
+            label="Disable new app notifications",
+            type="checkbox",
+            default=False,
+            description="No more 'An app has been installed' balloon tips in the tray"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="EnableBalloonTips",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_driver_install_balloon",
+        name="Disable Device Driver Install Balloon",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Suppress the 'Your device is ready to use' balloon when a driver installs",
+        option=TweakOption(
+            name="enabled",
+            label="Disable driver install balloon",
+            type="checkbox",
+            default=False,
+            description="Reduces tray clutter when frequently plugging in USB devices"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Settings",
+                value_name="DisableBalloonTips",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_low_battery_alert",
+        name="Low Battery Notification Level",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Set the battery percentage that triggers a low battery warning",
+        option=TweakOption(
+            name="level",
+            label="Alert at (% remaining)",
+            type="spinbox",
+            default=10,
+            description="Windows will show a notification when battery drops below this level",
+            min_value=1,
+            max_value=50
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes\{power-plan-guid}\7516b95f-f776-4464-8c53-06167f40cc99\8183ba9a-e910-48da-8769-14ae6dc1170a",
+                value_name="ACSettingIndex",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_explorer_balloon_tips",
+        name="Disable Explorer Balloon Tip Notifications",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Suppress File Explorer balloon tips (e.g., 'You have unused desktop icons')",
+        option=TweakOption(
+            name="enabled",
+            label="Disable Explorer balloon tips",
+            type="checkbox",
+            default=False,
+            description="No more 'Did you know…' and similar tips popping up from Explorer"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="EnableBalloonTips",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_network_location_wizard",
+        name="Disable Network Location Wizard Notification",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Stop the 'Do you want to allow your PC to be discoverable?' popup on new networks",
+        option=TweakOption(
+            name="enabled",
+            label="Disable network location wizard",
+            type="checkbox",
+            default=False,
+            description="Silently applies the previous network type without prompting"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Network\NewNetworkWindowOff",
+                value_name="",
+                value_type=winreg.REG_SZ,
+                enabled_value="",
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_printer_install_toast",
+        name="Disable Printer Install Toast Notification",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Suppress the 'Setting up [printer]' toast when a printer driver installs",
+        option=TweakOption(
+            name="enabled",
+            label="Disable printer install toast",
+            type="checkbox",
+            default=False,
+            description="Reduces distraction in shared office/print environments"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.Print",
+                value_name="Enabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_store_toast",
+        name="Disable Microsoft Store Promotional Notifications",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Block toast notifications from the Microsoft Store app",
+        option=TweakOption(
+            name="enabled",
+            label="Disable Store notifications",
+            type="checkbox",
+            default=False,
+            description="No more 'Check out these new apps' or sale notifications from the Store"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Microsoft.WindowsStore_8wekyb3d8bbwe!App",
+                value_name="Enabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_suggested_apps",
+        name="Disable App Suggestion Notifications",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Stop Windows from suggesting apps to install via notifications",
+        option=TweakOption(
+            name="enabled",
+            label="Disable app suggestions",
+            type="checkbox",
+            default=False,
+            description="Blocks 'Try these apps from the Store' promotional notification cards"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager",
+                value_name="SystemPaneSuggestionsEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="notif_onedrive_notification",
+        name="Disable OneDrive Sync Notifications",
+        category=TweakCategory.NOTIFICATIONS,
+        description="Suppress OneDrive sync status and promotional notifications",
+        option=TweakOption(
+            name="enabled",
+            label="Disable OneDrive notifications",
+            type="checkbox",
+            default=False,
+            description="OneDrive still syncs — you just won't see the status toast popups"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Microsoft.SkyDrive.Desktop",
+                value_name="Enabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+]
+
+# =============================================================================
+# DEVELOPER TOOLS TWEAKS
+# =============================================================================
+
+DEVELOPER_TWEAKS = [
+    Tweak(
+        id="dev_developer_mode",
+        name="Enable Developer Mode",
+        category=TweakCategory.DEVELOPER,
+        description="Unlock Windows Developer Mode for sideloading, WinDbg, and dev features",
+        option=TweakOption(
+            name="enabled",
+            label="Enable Developer Mode",
+            type="checkbox",
+            default=False,
+            description="Required for WSL2, sideloading UWP apps, and some dev tools"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock",
+                value_name="AllowDevelopmentWithoutDevLicense",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            ),
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock",
+                value_name="AllowAllTrustedApps",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_windows_sandbox",
+        name="Enable Windows Sandbox",
+        category=TweakCategory.DEVELOPER,
+        description="Enable the Windows Sandbox optional feature (lightweight VM for testing)",
+        option=TweakOption(
+            name="enabled",
+            label="Enable Windows Sandbox",
+            type="checkbox",
+            default=False,
+            description="Requires Pro/Enterprise and hardware virtualization; adds Sandbox to Start Menu"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Ext",
+                value_name="SandboxEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_powershell_execution_policy",
+        name="PowerShell Execution Policy",
+        category=TweakCategory.DEVELOPER,
+        description="Set the machine-wide PowerShell script execution policy",
+        option=TweakOption(
+            name="policy",
+            label="Execution policy",
+            type="dropdown",
+            default="Restricted",
+            description="RemoteSigned is the recommended dev setting — local scripts run freely",
+            choices=[
+                ("Restricted", "Restricted (default — no scripts)"),
+                ("RemoteSigned", "RemoteSigned (local scripts OK)"),
+                ("Unrestricted", "Unrestricted (all scripts — ⚠)"),
+                ("Bypass", "Bypass (skip all checks — ⚠)")
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell",
+                value_name="ExecutionPolicy",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_rdp_port",
+        name="Remote Desktop Port",
+        category=TweakCategory.DEVELOPER,
+        description="Change the RDP listening port from the default 3389",
+        option=TweakOption(
+            name="port",
+            label="Port number",
+            type="spinbox",
+            default=3389,
+            description="Changing from 3389 reduces automated scan exposure; update firewall rules too",
+            min_value=1024,
+            max_value=65535
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp",
+                value_name="PortNumber",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="dev_rdp_session_timeout",
+        name="RDP Session Idle Timeout",
+        category=TweakCategory.DEVELOPER,
+        description="Automatically disconnect idle Remote Desktop sessions after this many minutes",
+        option=TweakOption(
+            name="minutes",
+            label="Timeout (minutes, 0=never)",
+            type="spinbox",
+            default=0,
+            description="0=never disconnect; useful for unattended servers to free licenses",
+            min_value=0,
+            max_value=480
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services",
+                value_name="MaxIdleTime",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_show_file_operations_details",
+        name="Show Detailed File Operation Progress",
+        category=TweakCategory.DEVELOPER,
+        description="Show the detailed more-info view by default during file copies and moves",
+        option=TweakOption(
+            name="enabled",
+            label="Show detailed progress",
+            type="checkbox",
+            default=False,
+            description="Expands the progress dialog to show speed, items remaining, and time left by default"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager",
+                value_name="EnthusiastMode",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_wsl_memory_limit",
+        name="WSL2 Memory Limit Hint",
+        category=TweakCategory.DEVELOPER,
+        description="Hint for how much RAM WSL2 can consume (also configurable in .wslconfig)",
+        option=TweakOption(
+            name="enabled",
+            label="Enable WSL memory management hint",
+            type="checkbox",
+            default=False,
+            description="Enables the registry key that lets .wslconfig cap WSL2 memory"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss",
+                value_name="LxssManagerEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_hyper_v_hint",
+        name="Hyper-V Hypervisor Launch Type",
+        category=TweakCategory.DEVELOPER,
+        description="Control the Hyper-V hypervisor launch mode",
+        option=TweakOption(
+            name="enabled",
+            label="Enable Hyper-V hypervisor",
+            type="checkbox",
+            default=False,
+            description="Enables virtualization; disabling recovers ~5% CPU overhead but breaks WSL2/Docker"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization",
+                value_name="MinVmVersionForCpuBasedMitigations",
+                value_type=winreg.REG_SZ,
+                enabled_value="1.0",
+                disabled_value=""
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="dev_symbol_path",
+        name="Windows Symbol Server Path",
+        category=TweakCategory.DEVELOPER,
+        description="Set the _NT_SYMBOL_PATH environment variable for debugging tools",
+        option=TweakOption(
+            name="enabled",
+            label="Use Microsoft Symbol Server",
+            type="checkbox",
+            default=False,
+            description="Configures the standard Microsoft public symbol server for WinDbg and similar tools"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",
+                value_name="_NT_SYMBOL_PATH",
+                value_type=winreg.REG_EXPAND_SZ,
+                enabled_value=r"srv*C:\Symbols*https://msdl.microsoft.com/download/symbols",
+                disabled_value=""
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_crash_on_ctrl_scroll",
+        name="Force BSOD via Keyboard (Debug)",
+        category=TweakCategory.DEVELOPER,
+        description="Allow Ctrl+ScrollLock×2 to trigger a kernel crash for testing crash dumps",
+        option=TweakOption(
+            name="enabled",
+            label="Enable keyboard crash trigger",
+            type="checkbox",
+            default=False,
+            description="⚠ For testing only — double Scroll Lock while holding Ctrl forces a 0xE2 BSOD"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Services\kbdhid\Parameters",
+                value_name="CrashOnCtrlScroll",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_print_spooler_remote",
+        name="Allow Remote Print Spooler Connections",
+        category=TweakCategory.DEVELOPER,
+        description="Control whether remote clients can connect to this machine's Print Spooler",
+        option=TweakOption(
+            name="enabled",
+            label="Allow remote print spooler",
+            type="checkbox",
+            default=False,
+            description="Disable to mitigate PrintNightmare-class vulnerabilities on non-print-server machines"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows NT\Printers",
+                value_name="RegisterSpoolerRemoteRpcEndPoint",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=2
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_event_log_security_size",
+        name="Security Event Log Maximum Size",
+        category=TweakCategory.DEVELOPER,
+        description="Set the maximum size of the Windows Security audit event log",
+        option=TweakOption(
+            name="size",
+            label="Max size (KB)",
+            type="spinbox",
+            default=20480,
+            description="Raise to 102400 (100MB) for SOC/audit environments",
+            min_value=1024,
+            max_value=1048576
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Services\EventLog\Security",
+                value_name="MaxSize",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_disable_pchealth",
+        name="Disable PC Health Check Telemetry",
+        category=TweakCategory.DEVELOPER,
+        description="Disable the PC Health Check / Windows Update telemetry reporting agent",
+        option=TweakOption(
+            name="enabled",
+            label="Disable PC Health Check agent",
+            type="checkbox",
+            default=False,
+            description="Stops the MicrosoftEdgeUpdate/PCHealth agent from running in the background"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack",
+                value_name="ShowedToastAtLevel",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_disable_error_reporting_queue",
+        name="Disable Error Reporting Queue",
+        category=TweakCategory.DEVELOPER,
+        description="Stop Windows Error Reporting from queuing crash reports for later upload",
+        option=TweakOption(
+            name="enabled",
+            label="Disable WER queue",
+            type="checkbox",
+            default=False,
+            description="Crash reports are discarded immediately instead of being queued"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\Windows Error Reporting",
+                value_name="Disabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_telnet_client",
+        name="Enable Telnet Client",
+        category=TweakCategory.DEVELOPER,
+        description="Enable the built-in Windows Telnet client for testing TCP connections",
+        option=TweakOption(
+            name="enabled",
+            label="Enable Telnet client",
+            type="checkbox",
+            default=False,
+            description="Installs the optional Telnet feature via registry flag (takes effect after reboot)"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\PackageIndex",
+                value_name="TelnetClient",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="dev_windows_insider",
+        name="Windows Insider Program Channel",
+        category=TweakCategory.DEVELOPER,
+        description="Set the Windows Insider preview ring/channel",
+        option=TweakOption(
+            name="ring",
+            label="Insider ring",
+            type="dropdown",
+            default="Retail",
+            description="Choose your preview build frequency",
+            choices=[
+                ("Retail", "Retail (stable — no preview)"),
+                ("ReleasePreview", "Release Preview"),
+                ("Beta", "Beta Channel"),
+                ("Dev", "Dev Channel (latest features)")
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\WindowsSelfHost\Applicability",
+                value_name="BranchName",
+                value_type=winreg.REG_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_disable_feedback_notify",
+        name="Disable Windows Feedback Notifications",
+        category=TweakCategory.DEVELOPER,
+        description="Stop Windows from asking for feedback via notification popups",
+        option=TweakOption(
+            name="enabled",
+            label="Disable feedback notifications",
+            type="checkbox",
+            default=False,
+            description="Suppresses all Windows feedback request notifications system-wide"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Policies\Microsoft\Windows\DataCollection",
+                value_name="DoNotShowFeedbackNotifications",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="dev_long_paths",
+        name="Enable Win32 Long Path Support",
+        category=TweakCategory.DEVELOPER,
+        description="Remove the 260-character MAX_PATH limit for Win32 applications",
+        option=TweakOption(
+            name="enabled",
+            label="Enable long paths (>260 chars)",
+            type="checkbox",
+            default=False,
+            description="Required for deep Python/Node.js/Rust project trees; needs app manifest support"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\FileSystem",
+                value_name="LongPathsEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+]
+
+# =============================================================================
+# EXPANSION TWEAKS — EXISTING CATEGORIES
+# =============================================================================
+
+# --- Taskbar expansions ---
+TASKBAR_TWEAKS += [
+    Tweak(
+        id="taskbar_lock",
+        name="Lock Taskbar",
+        category=TweakCategory.TASKBAR,
+        description="Lock the taskbar so it cannot be moved or resized accidentally",
+        option=TweakOption(
+            name="enabled",
+            label="Lock taskbar",
+            type="checkbox",
+            default=True,
+            description="Prevents dragging the taskbar to another screen edge"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="TaskbarSizeMove",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="taskbar_hide_clock",
+        name="Hide Clock from Taskbar",
+        category=TweakCategory.TASKBAR,
+        description="Remove the clock from the system tray notification area",
+        option=TweakOption(
+            name="enabled",
+            label="Hide clock",
+            type="checkbox",
+            default=False,
+            description="Frees space in the notification area; you can still check time via calendar widget"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer",
+                value_name="HideClock",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="taskbar_show_desktop_button",
+        name="Show Desktop Button (Peek)",
+        category=TweakCategory.TASKBAR,
+        description="Show or hide the 'Show desktop' strip at the far right of the taskbar",
+        option=TweakOption(
+            name="enabled",
+            label="Show desktop button",
+            type="checkbox",
+            default=True,
+            description="The thin strip at taskbar's right edge minimises all windows on click"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_CURRENT_USER,
+                key_path=r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+                value_name="TaskbarSd",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+]
+
+# --- System expansions ---
+SYSTEM_TWEAKS += [
+    Tweak(
+        id="system_page_file_size",
+        name="Page File Initial Size",
+        category=TweakCategory.SYSTEM,
+        description="Set a fixed page file initial size in megabytes (prevents resize overhead)",
+        option=TweakOption(
+            name="size",
+            label="Initial size (MB)",
+            type="spinbox",
+            default=2048,
+            description="Setting initial = max size prevents the file from growing/shrinking dynamically",
+            min_value=256,
+            max_value=65536
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management",
+                value_name="PagingFiles",
+                value_type=winreg.REG_MULTI_SZ,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="system_legacy_boot_menu",
+        name="Enable Legacy Boot Menu (F8)",
+        category=TweakCategory.SYSTEM,
+        description="Restore the classic F8 Advanced Boot Options menu at startup",
+        option=TweakOption(
+            name="enabled",
+            label="Enable legacy F8 boot menu",
+            type="checkbox",
+            default=False,
+            description="Allows booting into Safe Mode via F8; adds ~200ms to every boot"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Configuration Manager",
+                value_name="BootGUIEnabled",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="system_kernel_no_auto_reboot",
+        name="Disable Auto-Reboot on Kernel Crash",
+        category=TweakCategory.SYSTEM,
+        description="Keep system running (frozen) after BSOD instead of rebooting",
+        option=TweakOption(
+            name="enabled",
+            label="No auto-reboot on kernel crash",
+            type="checkbox",
+            default=False,
+            description="Allows you to photograph/read the BSOD error before the machine restarts"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\CrashControl",
+                value_name="AutoReboot",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="system_processor_name",
+        name="Override Processor Display Name",
+        category=TweakCategory.SYSTEM,
+        description="Customise the CPU name shown in System Properties and Task Manager",
+        option=TweakOption(
+            name="enabled",
+            label="Use custom processor name",
+            type="checkbox",
+            default=False,
+            description="Changes the display string only — no actual CPU modification"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"HARDWARE\DESCRIPTION\System\CentralProcessor\0",
+                value_name="ProcessorNameString",
+                value_type=winreg.REG_SZ,
+                enabled_value="Custom CPU Name",
+                disabled_value=None
+            )
+        ]
+    ),
+]
+
+# --- Privacy expansions ---
+PRIVACY_TWEAKS += [
+    Tweak(
+        id="priv_app_diagnostics",
+        name="Disable App Diagnostics Access",
+        category=TweakCategory.PRIVACY,
+        description="Prevent apps from reading diagnostic information from other apps",
+        option=TweakOption(
+            name="enabled",
+            label="Deny app diagnostics",
+            type="checkbox",
+            default=False,
+            description="Blocks the appDiagnostics capability — no app can inspect another app's process info"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\appDiagnostics",
+                value_name="Value",
+                value_type=winreg.REG_SZ,
+                enabled_value="Deny",
+                disabled_value="Allow"
+            )
+        ]
+    ),
+    Tweak(
+        id="priv_contacts_access",
+        name="Disable Contacts Access (All Apps)",
+        category=TweakCategory.PRIVACY,
+        description="Block all apps from reading your Windows Contacts/People data",
+        option=TweakOption(
+            name="enabled",
+            label="Deny contacts access",
+            type="checkbox",
+            default=False,
+            description="Apps can't read your People/Contacts database"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\contacts",
+                value_name="Value",
+                value_type=winreg.REG_SZ,
+                enabled_value="Deny",
+                disabled_value="Allow"
+            )
+        ]
+    ),
+    Tweak(
+        id="priv_documents_access",
+        name="Disable Documents Library Access (All Apps)",
+        category=TweakCategory.PRIVACY,
+        description="Block all apps from accessing your Documents folder without explicit permission",
+        option=TweakOption(
+            name="enabled",
+            label="Deny Documents access",
+            type="checkbox",
+            default=False,
+            description="Only applies to UWP/packaged apps that request the documentsLibrary capability"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\documentsLibrary",
+                value_name="Value",
+                value_type=winreg.REG_SZ,
+                enabled_value="Deny",
+                disabled_value="Allow"
+            )
+        ]
+    ),
+]
+
+# --- Security expansions ---
+SECURITY_TWEAKS += [
+    Tweak(
+        id="sec_disable_guest",
+        name="Disable Guest Account",
+        category=TweakCategory.SECURITY,
+        description="Disable the built-in Guest user account",
+        option=TweakOption(
+            name="enabled",
+            label="Disable Guest account",
+            type="checkbox",
+            default=False,
+            description="Guest account allows unauthenticated logins; disable on all personal machines"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList",
+                value_name="Guest",
+                value_type=winreg.REG_DWORD,
+                enabled_value=0,
+                disabled_value=1
+            )
+        ]
+    ),
+    Tweak(
+        id="sec_no_anon_sam",
+        name="Disable Anonymous SAM Enumeration",
+        category=TweakCategory.SECURITY,
+        description="Prevent anonymous users from enumerating SAM account names",
+        option=TweakOption(
+            name="enabled",
+            label="Block anonymous SAM enumeration",
+            type="checkbox",
+            default=False,
+            description="Stops unauthenticated users from listing account names via the SAM pipe"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Lsa",
+                value_name="RestrictAnonymousSAM",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+    Tweak(
+        id="sec_audit_logon_events",
+        name="Enable Logon Event Auditing",
+        category=TweakCategory.SECURITY,
+        description="Write a Security event log entry on every successful and failed logon",
+        option=TweakOption(
+            name="enabled",
+            label="Enable logon auditing",
+            type="checkbox",
+            default=False,
+            description="Useful for detecting unauthorized access attempts; fills Security event log"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Lsa",
+                value_name="AuditBaseObjects",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+]
+
+# --- Performance expansions ---
+PERFORMANCE_TWEAKS += [
+    Tweak(
+        id="perf_ntfs_mft_zone",
+        name="NTFS MFT Zone Reservation",
+        category=TweakCategory.PERFORMANCE,
+        description="Reserve a larger portion of the volume for the NTFS Master File Table",
+        option=TweakOption(
+            name="zone",
+            label="MFT zone size",
+            type="dropdown",
+            default=1,
+            description="Larger zone reduces MFT fragmentation on drives with many small files",
+            choices=[
+                (1, "12.5% (default)"),
+                (2, "25%"),
+                (3, "37.5%"),
+                (4, "50%")
+            ]
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\FileSystem",
+                value_name="NtfsMftZoneReservation",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="perf_disable_write_combining",
+        name="Disable Write Combining",
+        category=TweakCategory.PERFORMANCE,
+        description="Disable write-combining for display memory (can fix GPU tearing/stutters)",
+        option=TweakOption(
+            name="enabled",
+            label="Disable write combining",
+            type="checkbox",
+            default=False,
+            description="⚠ May reduce GPU performance; useful when write-combining causes display glitches"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\GraphicsDrivers",
+                value_name="DisableWriteCombining",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="perf_disable_spectre_perf",
+        name="Disable Spectre/Meltdown Mitigations (Performance)",
+        category=TweakCategory.PERFORMANCE,
+        description="Remove CPU vulnerability mitigations for maximum performance",
+        option=TweakOption(
+            name="enabled",
+            label="Disable CPU mitigations",
+            type="checkbox",
+            default=False,
+            description="⚠ Serious security trade-off — gains 5–15% CPU but exposes timing vulnerabilities"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management",
+                value_name="FeatureSettingsOverride",
+                value_type=winreg.REG_DWORD,
+                enabled_value=3,
+                disabled_value=0
+            ),
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management",
+                value_name="FeatureSettingsOverrideMask",
+                value_type=winreg.REG_DWORD,
+                enabled_value=3,
+                disabled_value=3
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="perf_io_priority_boost",
+        name="Foreground I/O Priority Boost",
+        category=TweakCategory.PERFORMANCE,
+        description="Boost I/O priority for the foreground application",
+        option=TweakOption(
+            name="enabled",
+            label="Boost foreground I/O priority",
+            type="checkbox",
+            default=False,
+            description="Active window gets higher priority for disk reads/writes — snappier app response"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Control\PriorityControl",
+                value_name="IRQ8Priority",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+]
+
+# --- Gaming expansions ---
+GAMING_TWEAKS += [
+    Tweak(
+        id="game_disable_xbox_accessories",
+        name="Disable Xbox Accessories Service",
+        category=TweakCategory.GAMING,
+        description="Stop the Xbox Accessories background service (used for Xbox controllers/headsets)",
+        option=TweakOption(
+            name="enabled",
+            label="Disable Xbox Accessories",
+            type="checkbox",
+            default=False,
+            description="Frees RAM/CPU for users without Xbox accessories; disable Xbox controller remapping"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SYSTEM\CurrentControlSet\Services\XboxGipSvc",
+                value_name="Start",
+                value_type=winreg.REG_DWORD,
+                enabled_value=4,
+                disabled_value=3
+            )
+        ],
+        requires_restart=True
+    ),
+    Tweak(
+        id="game_frame_rate_cap",
+        name="Global Frame Rate Cap Hint",
+        category=TweakCategory.GAMING,
+        description="Set a global frame cap in the NVIDIA/system profile (hint — game must respect it)",
+        option=TweakOption(
+            name="fps",
+            label="Max FPS (0 = unlimited)",
+            type="spinbox",
+            default=0,
+            description="0 = no cap; set to 60/120/144 to reduce heat and power without per-game config",
+            min_value=0,
+            max_value=360
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games",
+                value_name="MaxFrameRate",
+                value_type=winreg.REG_DWORD,
+                enabled_value=None,
+                disabled_value=None
+            )
+        ]
+    ),
+    Tweak(
+        id="game_auto_hdr",
+        name="Auto HDR",
+        category=TweakCategory.GAMING,
+        description="Enable Auto HDR to automatically add HDR to DirectX 11/12 games",
+        option=TweakOption(
+            name="enabled",
+            label="Enable Auto HDR",
+            type="checkbox",
+            default=False,
+            description="Requires HDR display; adds HDR highlights to SDR games automatically (Windows 11)"
+        ),
+        registry_changes=[
+            RegistryChange(
+                hive=winreg.HKEY_LOCAL_MACHINE,
+                key_path=r"SOFTWARE\Microsoft\DirectX",
+                value_name="AutoHDREnable",
+                value_type=winreg.REG_DWORD,
+                enabled_value=1,
+                disabled_value=0
+            )
+        ]
+    ),
+]
+
+# =============================================================================
 # ALL TWEAKS
 # =============================================================================
 
@@ -6423,7 +9398,12 @@ ALL_TWEAKS = (
     APPS_SERVICES_TWEAKS +
     CONTEXT_MENU_TWEAKS +
     PERSONALIZATION_TWEAKS +
-    ACCESSIBILITY_TWEAKS
+    ACCESSIBILITY_TWEAKS +
+    DISPLAY_TWEAKS +
+    MOUSE_INPUT_TWEAKS +
+    STARTUP_BOOT_TWEAKS +
+    NOTIFICATIONS_TWEAKS +
+    DEVELOPER_TWEAKS
 )
 
 # Group tweaks by category

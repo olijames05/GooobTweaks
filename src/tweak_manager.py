@@ -2,6 +2,7 @@
 Tweak manager - handles applying and reading tweak states.
 """
 
+import subprocess
 import winreg
 from typing import Any, Dict, Optional
 from tweaks import ALL_TWEAKS, Tweak, RegistryChange
@@ -34,6 +35,8 @@ class TweakManager:
             "context_copy_as_path": self._handle_copy_as_path,
             "context_no_share": self._make_blocked_ext_handler(),
             "context_no_cast": self._make_blocked_ext_handler(),
+            "boot_timeout": self._handle_boot_timeout,
+            "system_page_file_size": self._handle_page_file_size,
         }
     
     def get_tweak(self, tweak_id: str) -> Optional[Tweak]:
@@ -447,3 +450,53 @@ class TweakManager:
                 print(f"Error removing blocked extension {change.value_name}: {e}")
                 return False
         return handler
+
+    def _handle_boot_timeout(self, tweak: Tweak, value: Any = None, read: bool = False):
+        """Read/write the Windows Boot Manager timeout via bcdedit."""
+        if read:
+            try:
+                result = subprocess.run(
+                    ["bcdedit", "/enum", "{bootmgr}"],
+                    capture_output=True, text=True, timeout=5
+                )
+                for line in result.stdout.splitlines():
+                    if line.strip().lower().startswith("timeout"):
+                        parts = line.split()
+                        if len(parts) >= 2:
+                            return int(parts[-1])
+            except Exception:
+                pass
+            return tweak.option.default
+        try:
+            subprocess.run(
+                ["bcdedit", "/timeout", str(int(value))],
+                capture_output=True, timeout=5
+            )
+            return True
+        except Exception as e:
+            print(f"Error setting boot timeout: {e}")
+            return False
+
+    def _handle_page_file_size(self, tweak: Tweak, value: Any = None, read: bool = False):
+        """Read/write the PagingFiles REG_MULTI_SZ value in Memory Management."""
+        key_path = r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"
+        hive = winreg.HKEY_LOCAL_MACHINE
+        if read:
+            raw = read_registry_value(hive, key_path, "PagingFiles", default=None)
+            if raw and isinstance(raw, (list, tuple)) and raw[0]:
+                # Format: "C:\pagefile.sys INIT MAX"
+                parts = raw[0].split()
+                if len(parts) >= 2:
+                    try:
+                        return int(parts[1])
+                    except ValueError:
+                        pass
+            return tweak.option.default
+        # Build the new REG_MULTI_SZ entry keeping the existing drive path if present
+        raw = read_registry_value(hive, key_path, "PagingFiles", default=None)
+        drive = "C:\\pagefile.sys"
+        if raw and isinstance(raw, (list, tuple)) and raw[0]:
+            drive = raw[0].split()[0]
+        size = int(value)
+        new_entry = f"{drive} {size} {size}"
+        return write_registry_value(hive, key_path, "PagingFiles", [new_entry], winreg.REG_MULTI_SZ)
