@@ -7,9 +7,17 @@ A Windows system-tweaking tool inspired by GNOME Tweaks — customize and optimi
 
 ## Screenshots
 
-| Taskbar | Network |
+| Taskbar | Explorer |
 |---|---|
-| ![Taskbar tab](screenshots/taskbar.png) | ![Network tab](screenshots/network.png) |
+| ![Taskbar tab](screenshots/taskbar.png) | ![Explorer tab](screenshots/explorer.png) |
+
+| System | Network |
+|---|---|
+| ![System tab](screenshots/system.png) | ![Network tab](screenshots/network.png) |
+
+| Power & Battery | |
+|---|---|
+| ![Power & Battery tab](screenshots/power.png) | |
 
 ---
 
